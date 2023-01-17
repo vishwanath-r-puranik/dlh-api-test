@@ -91,7 +91,7 @@ jobs:
 
           echo "Building the project"
 
-          dotnet build AspNetCoreWebApi6.sln
+          dotnet build DLHAPI.sln
 
 
           echo "Finishing scanning the project"

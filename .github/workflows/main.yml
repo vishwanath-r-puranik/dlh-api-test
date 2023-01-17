@@ -124,8 +124,9 @@ jobs:
     - run: helm uninstall ${{ env.HELM_RELEASE_NAME }}
       if: env.RELEASE_EXISTS == 'true'
 
-  build-code:
-    name: Build code
+
+  build-code-image:
+    name: Create Image, scan & push to ACR
     #if: github.event_name == 'pull_request'
     #if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'dev')
     needs: [uninstall-self-hosted-runner]
@@ -133,52 +134,11 @@ jobs:
 
     steps:
     - name: Checkout git repository
-      id: checkout1
-      uses: actions/checkout@v3
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: current directory path
-      run: pwd
-    - name: list current directory structure
-      run: ls -lrt ./${{ env.APP }}/bin/Debug/net6.0
-    - name: provide directory permissions
-      run: echo $GITHUB_SHA
-
-    - name: Upload built artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: app-dll
-        path: ${{ env.APP }}/bin/Debug/net6.0/${{ env.APP }}.dll
-
-  create-image:
-    name: Create Image, scan & push to ACR
-    #if: github.event_name == 'pull_request'
-    #if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'dev')
-    needs: [build-code]
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout git repository
       id: checkout2
       uses: actions/checkout@v3
-    - name: Download built artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: app-dll
-        path: ${{ env.APP }}/bin/Debug/net6.0/${{ env.APP }}.dll
         
-  
     - name: Build the Docker image
-      run: docker build . --file ./${{ env.APP }}/Dockerfile --tag my-image-name:latest
+      run: docker build . --file ./Dockerfile --tag my-image-name:latest
 
     - name: Tag the Docker image with ACR tag/label
       run: docker tag my-image-name:latest ${{ env.REGISTRY }}/024087d6-4aa7-4a52-90ec-0db8ffe1249e/dlh-dev/${{ env.APP-IMAGE }}:$GITHUB_SHA
@@ -192,7 +152,7 @@ jobs:
     name: Scan container image
     #if: github.event_name == 'pull_request'
     #if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'dev')
-    needs: [create-image]
+    needs: [build-code-image]
     runs-on: ubuntu-latest
 
     steps:

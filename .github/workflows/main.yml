@@ -50,6 +50,7 @@ jobs:
       uses: azure/login@v1.4.6
       with:
         client-id: e037084f-f453-41bf-9e93-1ed766d31dd3
+        client-secret: GCO8Q~f71jj0NQmIRVcVntgVFjDudGVdZli3Ddnm
         tenant-id: 2bb51c06-af9b-42c5-8bf5-3c3b7b10850b
         subscription-id: c62591af-1e61-4b88-8287-c49f27522d26
     - name: Azure keyvault list secret

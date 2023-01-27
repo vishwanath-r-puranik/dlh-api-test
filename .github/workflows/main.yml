@@ -53,7 +53,7 @@ jobs:
       # Logs in with your Azure credentials
     - name: Azure login
       run: |
-          az login --service-principal -u e037084f-f453-41bf-9e93-1ed766d31dd3 -p GCO8Q~f71jj0NQmIRVcVntgVFjDudGVdZli3Ddnm --tenant 2bb51c06-af9b-42c5-8bf5-3c3b7b10850b
+          az login --service-principal -u 024087d6-4aa7-4a52-90ec-0db8ffe1249e -p bQB8Q~e4xs-H6EwEMrJ-HEl7mtKVar-vKZAjAcL- --tenant 2bb51c06-af9b-42c5-8bf5-3c3b7b10850b
     - name: Azure keyvault list secret
       run: |
           az keyvault secret list --vault-name "onpremprod-dlh-dev"

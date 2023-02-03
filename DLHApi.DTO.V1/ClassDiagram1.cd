@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DLHApi.DTO.V1.Authentication.TokenHandler" BaseTypeListCollapsed="true">
+    <Position X="1" Y="2" Width="1.5" />
+    <NestedTypes>
+      <Class Name="DLHApi.DTO.V1.Authentication.TokenHandler.Token" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Authentication\TokenHandler.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEABAAIAAA=</HashCode>
+      <FileName>Authentication\TokenHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DLHApi.DTO.V1.DTO.DlhApiSuccessResponse&lt;T&gt;" BaseTypeListCollapsed="true">
+    <Position X="4" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>DTO\DlhApiSuccessResponse.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DLHApi.DTO.V1.DTO.DlhistoryModel">
+    <Position X="5.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAQAABAAAA=</HashCode>
+      <FileName>DTO\DlhistoryModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DLHApi.DTO.V1.Mapper.DlhistoryModelMapper">
+    <Position X="7.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Mapper\DlhistoryModelMapper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DLHApi.DTO.V1.Profiles.DlhResponseProfile">
+    <Position X="4" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Profiles\DlhResponseProfile.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AutoMapper.Profile" Collapsed="true">
+    <Position X="10" Y="1.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="DLHApi.DTO.V1.Authentication.ITokenHandler">
+    <Position X="1" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Authentication\ITokenHandler.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

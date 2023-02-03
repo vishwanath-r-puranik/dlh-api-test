@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IronPdf" Version="2023.1.11416" />
+    <PackageReference Include="IronPdf.Native.Chrome.Linux" Version="2023.1.11387" />
+    <PackageReference Include="IronPdf.Native.Chrome.MacOS" Version="2023.1.11387" />
+    <PackageReference Include="Keycloak.AuthServices.Authentication" Version="1.5.1" />
+    <PackageReference Include="Keycloak.AuthServices.Authorization" Version="1.5.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DLHApi.Common\DLHApi.Common.csproj" />
+    <ProjectReference Include="..\DLHApi.EIS\DLHApi.EIS.csproj" />
+    <!--DAL->EIS-->
+    <!--<ProjectReference Include="..\DLHApi.EIS\DLHApi.EIS.csproj" />-->
+  </ItemGroup>
+
+</Project>

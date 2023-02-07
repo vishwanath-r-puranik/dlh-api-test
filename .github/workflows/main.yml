@@ -91,7 +91,7 @@ jobs:
 
           echo "Building the project"
 
-          dotnet build DLHAPI.sln
+          dotnet build DLHApi.sln
 
 
           echo "Finishing scanning the project"

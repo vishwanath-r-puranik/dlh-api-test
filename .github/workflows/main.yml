@@ -98,7 +98,7 @@ jobs:
           echo "Finishing scanning the project"
 
           dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN_PES }}"
-
+          #dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
   uninstall-self-hosted-runner: 
     needs: [build]

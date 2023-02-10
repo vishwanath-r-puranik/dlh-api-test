@@ -164,9 +164,10 @@ jobs:
       id: grype
     - name: Anchore scan run
       id: grype-scan
-      run: ${{steps.grype.outputs.cmd}} ${{ env.REGISTRY }}/024087d6-4aa7-4a52-90ec-0db8ffe1249e/dlh-dev/${{ env.APP-IMAGE }}:$GITHUB_SHA -o json > scan-image-json.json
+      # run: ${{steps.grype.outputs.cmd}} ${{ env.REGISTRY }}/024087d6-4aa7-4a52-90ec-0db8ffe1249e/dlh-dev/${{ env.APP-IMAGE }}:$GITHUB_SHA -o json > scan-image-json.json
+      run: ${{steps.grype.outputs.cmd}} ${{ env.REGISTRY }}/024087d6-4aa7-4a52-90ec-0db8ffe1249e/dlh-dev/${{ env.APP-IMAGE }}:$GITHUB_SHA
     - name: New Inspect grype scan json report
-      run: cat scan-image-json.json
+      #run: cat scan-image-json.json
  
  
   kustomize:

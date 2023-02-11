@@ -9,33 +9,16 @@
  */
 
 using System;
-using System.IO;
-using System.Reflection;
-using Microsoft.AspNetCore.Authorization;
+using DLHApi.Common.Handlers;
+using DLHApi.OpenApiSpec;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Org.OpenAPITools.Authentication;
-using Org.OpenAPITools.Filters;
-using Org.OpenAPITools.OpenApi;
 using Org.OpenAPITools.Formatters;
-using DLHApi.DAL.Services;
-using AutoMapper;
-using DLHApi.DTO.V1.Mapper;
-using Keycloak.AuthServices.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using DLHApi.DAL.Repo;
-using DLHApi.DAL.Data;
-using DLHApi.EIS.Services.PDFMerge;
-using Microsoft.EntityFrameworkCore;
-using DLHApi.Common.Handlers;
-using DLHApi.EIS.Authentication;
-using DLHApi.DAL.EISHandler.Authentication;
 
 namespace Org.OpenAPITools
 {
@@ -64,36 +47,16 @@ namespace Org.OpenAPITools
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
-            // ::  SQL  server database - connection string from appsetting.json file
-
-            var dlhDbServer = Environment.GetEnvironmentVariable("DlhDBServer");
-            var dlhDbName = Environment.GetEnvironmentVariable("DlhDBName");
-            var dlhDbUserId = Environment.GetEnvironmentVariable("DlhDbUserId");
-            var dlhDbPassword = Environment.GetEnvironmentVariable("DlhDbPassword");
-
-            services.AddHttpClient<PdfMergeService>();
-            services.AddDbContext<DlhdevDbContext>(options => options.UseSqlServer($"Server={dlhDbServer};Database={dlhDbName};User Id={dlhDbUserId};Password={dlhDbPassword};TrustServerCertificate=True"));
-            //builder.Configuration.GetConnectionString("DbConnection")));
-
-            var auditDbServer = Environment.GetEnvironmentVariable("AuditDBServer");
-            var auditDbName = Environment.GetEnvironmentVariable("AuditDBName");
-            var auditDbUserId = Environment.GetEnvironmentVariable("AuditDbUserId");
-            var auditDbPassword = Environment.GetEnvironmentVariable("AuditDbPassword");
-
-            services.AddDbContext<DlhdevAuditContext>(options => options.UseSqlServer($"Server ={auditDbServer}; Database ={auditDbName}; User Id = {auditDbUserId}; Password ={auditDbPassword}; TrustServerCertificate = True"));
-
-            services.AddScoped<IDlhService, DlhService>();
-            services.AddScoped<IDlhRepo, DlhRepo>();
-            services.AddScoped<IAuditService, AuditService>();
-            services.AddScoped<IAuditRepo, AuditRepo>();
-            services.AddScoped<DlhistoryModelMapper, DlhistoryModelMapper>();
-            services.AddScoped<ITokenHandler, DLHApi.EIS.Authentication.TokenHandler>();
-            services.AddScoped<IPdfMergeService, PdfMergeService>();
-            services.AddScoped<GenerateToken, GenerateToken>();
+            services.DbSetupServices();
+            services.RegisterServices();
+            services.EnableSwaggerServices();
+            services.ConfigureAuthenticationService();
 
             // :: Inject DTO layer (automapper)
             services.AddAutoMapper(typeof(DLHApi.DTO.V1.DTO.DlhistoryModel));
 
+            //:: Add CORS
+            services.ConfigureCors();
 
             // Add framework services.
             services
@@ -109,74 +72,7 @@ namespace Org.OpenAPITools
                         NamingStrategy = new CamelCaseNamingStrategy()
                     });
                 });
-
-            services
-                .AddSwaggerGen(c =>
-                {
-                    c.EnableAnnotations(enableAnnotationsForInheritance: true, enableAnnotationsForPolymorphism: true);
-                    
-                    c.SwaggerDoc("0.0.1", new OpenApiInfo
-                    {
-                        Title = "IBM MOVES DLH API",
-                        Description = "IBM MOVES DLH API (ASP.NET Core 6.0)",
-                        TermsOfService = new Uri("https://www.ibm.com/ca-en"),
-                        Contact = new OpenApiContact
-                        {
-                            Name = "IBM API Support Team",
-                            Url = new Uri("https://www.ibm.com/ca-en"),
-                            Email = "support@ibm.com"
-                        },
-                        License = new OpenApiLicense
-                        {
-                            Name = "NoLicense",
-                            Url = new Uri("https://www.ibm.com/ca-en")
-                        },
-                        Version = "0.0.1",
-                    });
-                    c.CustomSchemaIds(type => type.FriendlyId(true));
-                    c.IncludeXmlComments($"{AppContext.BaseDirectory}{Path.DirectorySeparatorChar}{Assembly.GetEntryAssembly().GetName().Name}.xml");
-                    // Sets the basePath property in the OpenAPI document generated
-                    c.DocumentFilter<BasePathFilter>("/v1");
-
-                    // Include DataAnnotation attributes on Controller Action parameters as OpenAPI validation rules (e.g required, pattern, ..)
-                    // Use [ValidateModelState] on Actions to actually validate it in C# as well!
-                    c.OperationFilter<GeneratePathParamsValidationFilter>();
-
-                    var securityScheme = new OpenApiSecurityScheme
-                    {
-                        Name = "JWT Authentication",
-                        Description = "Enter a valid JWT bearer token",
-                        In = ParameterLocation.Header,
-                        Type = SecuritySchemeType.Http,
-                        Scheme = "bearer",
-                        BearerFormat = "JWT",
-                        Reference = new OpenApiReference
-                        {
-                            Id = JwtBearerDefaults.AuthenticationScheme,
-                            Type = ReferenceType.SecurityScheme
-                        }
-                    };
-                    c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-                    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {securityScheme, new string[] {} }
-    });
-
-                });
-                services
-                    .AddSwaggerGenNewtonsoftSupport();
-
-            // :: Add authorization - Keycloak
-            var authenticationOptions = new KeycloakAuthenticationOptions
-            {
-                AuthServerUrl = "https://keycloak-keycloak.apps.pesdev.hcscloud.net/",
-                Realm = "pesrealm",
-                Resource = "pesclient",
-                //SslRequired = "none",
-                VerifyTokenAudience = false,
-            };
-
-            services.AddKeycloakAuthentication(authenticationOptions);
+           
         }
 
         /// <summary>
@@ -194,6 +90,8 @@ namespace Org.OpenAPITools
             {
                 app.UseHsts();
             }
+
+            app.UseCors(Environment.GetEnvironmentVariable("CorsPolicy"));
 
             app.UseHttpsRedirection();
 
@@ -223,11 +121,6 @@ namespace Org.OpenAPITools
                     //TODO: Or alternatively use the original OpenAPI contract that's included in the static files
                     // c.SwaggerEndpoint("/openapi-original.json", "IBM MOVES DLH API Original");
                 });
-          //  app.UseRouting();
-            //app.UseEndpoints(endpoints =>
-            //    {
-            //        endpoints.MapControllers();
-            //    });
         }
     }
 }

@@ -3,5 +3,6 @@
     public  interface ITokenHandler
     {
         Task<string> RetrieveToken();
+        Task<string> RetrieveAccessToken();
     }
 }

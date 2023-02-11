@@ -33,4 +33,10 @@
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Files\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Files\" />
+  </ItemGroup>
 </Project>

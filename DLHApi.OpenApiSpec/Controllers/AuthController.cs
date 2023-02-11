@@ -1,6 +1,9 @@
-﻿using DLHApi.DAL.EISHandler.Authentication;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
 using System.Threading.Tasks;
+using DLHApi.Common.Constants;
+using DLHApi.Common.Utils;
+using DLHApi.DAL.EISHandler.Authentication;
+using Microsoft.AspNetCore.Mvc;
 
 namespace DLHApi.OpenApiSpec.Controllers
 {
@@ -25,7 +28,7 @@ namespace DLHApi.OpenApiSpec.Controllers
                 return Ok(acessToken);
             }
 
-            return BadRequest("Username of Password is incorrect");
+            throw new ApiException((string.Format(ErrorConstants.IncorrectUsrnameOrPsswrd)), (int)HttpStatusCode.BadRequest);
             
             /*var acessToken = await _tokenHandler.RetrieveToken();
 

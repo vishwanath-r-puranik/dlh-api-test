@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 using System.Web.Mvc;
 using DLHApi.Common.Models;
 
@@ -31,11 +26,11 @@ namespace DLHApi.Common.Utils
             StatusCode = statusCode;
         }
 
-        public ApiException(ModelStateDictionary modelState, int statusCode = (int)HttpStatusCode.BadRequest)
-        {
-            ValidationErrors = modelState.Keys.SelectMany(key => modelState[key].Errors.Select(x => new DlhValidationError(key, x.ErrorMessage))).ToList();
-            StatusCode = statusCode;
-        }
+        //public ApiException(ModelStateDictionary modelState, int statusCode = (int)HttpStatusCode.BadRequest)
+        //{
+        //    ValidationErrors = modelState.Keys.SelectMany(key => modelState[key].Errors.Select(x => new DlhValidationError(key, x.ErrorMessage))).ToList();
+        //    StatusCode = statusCode;
+        //}
 
         //can add more......
     }

@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DLHApi.DAL.Models;
+﻿namespace DLHApi.DAL.Models;
 
 public partial class DlhRequestAudit
 {
-    public int? Id { get; set; }
 
-    public DateTime? RequestDate { get; set; }
-
+    public string RequestId { get; set; }
+    public DateTime? RequestDateTimeStamp { get; set; }
+    public DateTime? PaymentDateTimeStamp { get; set; }
     public string? Mvid { get; set; }
+    public string? RecordStatus { get; set; }
+    public string? MOVESTxServiceNo { get; set; }
+    public string? ROADSUserID { get; set; }
+    public string? MOVESSessionID { get; set; }
 
-    public string? ReqStatus { get; set; }
 }

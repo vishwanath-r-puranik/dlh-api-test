@@ -38,6 +38,12 @@ ENV AuditDBName=$auditdbname
 ENV AuditDbUserId=$auditdbuserid
 ENV AuditDbPassword=$auditdbpassword
 ENV DocMergrUri="https://mock12-mock-doc-merge.apps.pesdev.hcscloud.net/mergepdfservice"
+ENV KeyCloakUri="https://keycloak-keycloak.apps.pesdev.hcscloud.net/realms/pesrealm/protocol/openid-connect/token"
+ENV KeyCloakUsername="test"
+ENV KeyCloakPassword="test123"
+ENV KeyCloakClient_id="pesclient"
+ENV KeyCloakClient_secret="EVWo7ElvQU97ANVBjL0oXR2CxbiFRUxy"
+ENV KeyCloakGrant_type="password"
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Org.OpenAPITools.dll"]

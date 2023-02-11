@@ -1,16 +1,10 @@
-﻿using DLHApi.DAL.Data;
+﻿using DLHApi.Common.Utils;
+using System.Net;
+using DLHApi.DAL.Data;
 using DLHApi.DAL.Models;
 using DLHApi.DAL.RequestResponse;
 using DLHApi.DAL.Utils;
-using IronPdf;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DLHApi.DAL.Repo
 {
@@ -118,15 +112,6 @@ namespace DLHApi.DAL.Repo
 
                     if (dlhData != null)
                     {
-                        //var renderer = new HtmlToPdf();
-                        //var pdf = await renderer.RenderHtmlAsPdfAsync(TemplateGenerator.GetHTMLString(dlhData));
-
-                        //response.DlhFile = new DlhFile
-                        //{
-                        //    FileContent = pdf.BinaryData,
-                        //    ContentType = "application/pdf",
-                        //    FileName = $"sampledlh{req.Mvid}.pdf"
-                        //};
 
                         response.DlhistoryModel = dlhData;
                         response.Success = true;
@@ -135,7 +120,7 @@ namespace DLHApi.DAL.Repo
             }
             catch (Exception ex)
             {
-                response.Message = ex.Message.ToString();
+                throw new ApiException(ex, (int)HttpStatusCode.InternalServerError);
 
             }
             return response;

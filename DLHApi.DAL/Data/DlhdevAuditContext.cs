@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using DLHApi.DAL.RequestResponse;
-using DLHApi.DAL.Models;
+﻿using DLHApi.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DLHApi.DAL.Data;
 
 public partial class DlhdevAuditContext : DbContext
 {
-    public DlhdevAuditContext()
-    {
-    }
+   
 
     public DlhdevAuditContext(DbContextOptions<DlhdevAuditContext> options)
         : base(options)
@@ -19,26 +14,36 @@ public partial class DlhdevAuditContext : DbContext
 
     public virtual DbSet<DlhRequestAudit> DlhRequestAudits { get; set; }
 
-    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-    //        => optionsBuilder.UseSqlServer("Server=LGS9143;Database=DLHDevAudit;Integrated Security=True;TrustServerCertificate=True");
-
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DlhRequestAudit>(entity =>
         {
-            entity.HasKey(e => e.Id);//.HasName("PK__DlhReque__3214EC0713586FB1");
+         entity.HasKey(e => e.RequestId);
 
             entity.ToTable("DlhRequestAudit");
 
+            entity.Property(e => e.RequestId)
+               .HasMaxLength(20)
+               .HasColumnName("RequestId");
             entity.Property(e => e.Mvid)
-                .HasMaxLength(50)
+                .HasMaxLength(20)
                 .IsUnicode(false)
                 .HasColumnName("MVid");
-            entity.Property(e => e.ReqStatus)
-                .HasMaxLength(250)
-                .IsUnicode(false);
-            entity.Property(e => e.RequestDate).HasColumnType("datetime");
+            entity.Property(e => e.RecordStatus)
+                .HasMaxLength(50)
+                .HasColumnName("RecordStatus");
+            entity.Property(e => e.MOVESTxServiceNo)
+                .HasMaxLength(50)
+                .HasColumnName("MOVESTxServiceNo");
+            entity.Property(e => e.ROADSUserID)
+                 .HasMaxLength(50)
+                 .HasColumnName("ROADSUserID");
+            entity.Property(e => e.MOVESSessionID)
+                .HasMaxLength(50)
+                .HasColumnName("MOVESSessionID");
+            entity.Property(e => e.RequestDateTimeStamp).HasColumnType("datetime");
+            entity.Property(e => e.PaymentDateTimeStamp).HasColumnType("datetime");
         });
 
         OnModelCreatingPartial(modelBuilder);

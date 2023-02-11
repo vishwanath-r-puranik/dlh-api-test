@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- File name extension must be .runsettings -->
+<RunSettings>
+  <RunConfiguration>
+    <EnvironmentVariables>
+      <!-- List of environment variables we want to set-->
+      <DlhDBServer>169.55.186.119, 9443</DlhDBServer>
+      <DlhDBName>DLHDevDb</DlhDBName>
+      <DlhDbUserId>sa</DlhDbUserId>
+      <DlhDbPassword>Sql2019isfast</DlhDbPassword>
+      <AuditDBServer>169.55.186.119, 9443</AuditDBServer>
+      <AuditDBName>DLHDevAudit</AuditDBName>
+      <AuditDbUserId>sa</AuditDbUserId>
+      <AuditDbPassword>Sql2019isfast</AuditDbPassword>
+      <DocMergrUri>https://mock21-mock-doc-merge.apps.pesdev.hcscloud.net/mergepdfservice</DocMergrUri>
+    </EnvironmentVariables>
+  </RunConfiguration>
+</RunSettings>

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DLHApi.Common.Constants
+﻿namespace DLHApi.Common.Constants
 {
     public static  class ErrorConstants
     {
@@ -19,5 +13,7 @@ namespace DLHApi.Common.Constants
         public const string NoData = "Request returned No Data.";
 
         public const string IncorrectMvID = "Input MvId:{0} is invalid.";
+
+        public const string IncorrectUsrnameOrPsswrd = "Username or Password is incorrect."; 
     }
 }

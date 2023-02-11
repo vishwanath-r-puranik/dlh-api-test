@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DLHApi.DAL.Models;
+﻿namespace DLHApi.DAL.Models;
 
 public partial class LicenceDetail
 {
     public long LicDetailId { get; set; }
 
-    public decimal? Mvid { get; set; }
+    public int? Mvid { get; set; }
 
     public DateTime? IssueDate { get; set; }
 

@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace DLHApi.EIS.Authentication
 {
@@ -11,20 +11,40 @@ namespace DLHApi.EIS.Authentication
         public async Task<string> RetrieveToken()
         {
             // :: keycloak
-            string url = "https://keycloak-keycloak.apps.pesdev.hcscloud.net/realms/pesrealm/protocol/openid-connect/token";
-            string username = "test";
-            string password = "test123";
-            string client_id = "pesclient";
-            string client_secret = "EVWo7ElvQU97ANVBjL0oXR2CxbiFRUxy";
-            string grant_type = "password";
+            var url = Environment.GetEnvironmentVariable("KeyCloakUri");
+            var username = Environment.GetEnvironmentVariable("KeyCloakUsername");
+            var password = Environment.GetEnvironmentVariable("KeyCloakPassword");
+            var client_id = Environment.GetEnvironmentVariable("KeyCloakClient_id");
+            var client_secret = Environment.GetEnvironmentVariable("KeyCloakClient_secret");
+            var grant_type = Environment.GetEnvironmentVariable("KeyCloakGrant_type");
 
             var form = new Dictionary<string, string>
-                {
+            {
                     {"username", username},
                     {"password", password},
                     {"client_id", client_id},
                     {"client_secret", client_secret},
                     {"grant_type", grant_type},
+            };
+
+            HttpResponseMessage tokenResponse = await client.PostAsync(url, new FormUrlEncodedContent(form));
+            var jsonContent = await tokenResponse.Content.ReadAsStringAsync();
+            Token tok = JsonConvert.DeserializeObject<Token>(jsonContent);
+            return tok.AccessToken;
+        }
+
+        public async Task<string> RetrieveAccessToken()
+        {
+            var url = Environment.GetEnvironmentVariable("DMS_AccesToken_Uri");
+            var client_id = Environment.GetEnvironmentVariable("DMS_ClientID");
+            var client_secret = Environment.GetEnvironmentVariable("DMS_ClientSecret");
+            var grant_type = Environment.GetEnvironmentVariable("DMS_GrantType");
+
+            var form = new Dictionary<string, string>
+            {
+                {"client_id", client_id},
+                {"client_secret", client_secret},
+                {"grant_type", grant_type},
             };
 
             HttpResponseMessage tokenResponse = await client.PostAsync(url, new FormUrlEncodedContent(form));

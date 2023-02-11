@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DLHApi.DAL.Models
+﻿namespace DLHApi.DAL.Models
 {
     public partial class DlhistoryInfo
     {
         public int DlhisInfoId { get; set; }
 
-        public decimal? Mvid { get; set; }
+        public int? Mvid { get; set; }
 
         public string? ServiceType { get; set; }
 

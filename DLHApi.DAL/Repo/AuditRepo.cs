@@ -1,10 +1,8 @@
-﻿using DLHApi.DAL.Data;
+﻿using DLHApi.Common.Constants;
+using System.Net;
+using DLHApi.Common.Utils;
+using DLHApi.DAL.Data;
 using DLHApi.DAL.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DLHApi.DAL.Repo
 {
@@ -20,8 +18,8 @@ namespace DLHApi.DAL.Repo
 
         public enum ReqStatus
         {
-            Success,
-            Failed
+            Requested,
+            Paid
         }
 
         public void AddRequestAudit( string Mvid)
@@ -29,8 +27,9 @@ namespace DLHApi.DAL.Repo
             var reqAudit = new DlhRequestAudit()
             {
                 Mvid = Mvid,
-                RequestDate = DateTime.Now,
-                ReqStatus = ReqStatus.Success.ToString()
+                RequestDateTimeStamp = DateTime.Now,
+                RecordStatus = ReqStatus.Requested.ToString(),
+                RequestId = Guid.NewGuid().ToString(),
 
             };
             try
@@ -39,9 +38,8 @@ namespace DLHApi.DAL.Repo
                 _dlhAuditdbContxt.SaveChanges();
             }
             catch (Exception ex) {
+                throw new ApiException(ex, (int)HttpStatusCode.InternalServerError);
             }
-
-
         }
     }
 }

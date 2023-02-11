@@ -1,16 +1,11 @@
-﻿using DLHApi.Common.Constants;
-using DLHApi.Common.Utils;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using DLHApi.Common.Constants;
 using DLHApi.Common.Models;
+using DLHApi.Common.Utils;
+using Microsoft.AspNetCore.Http;
 
 namespace DLHApi.Common.Handlers
 {
@@ -50,9 +45,9 @@ namespace DLHApi.Common.Handlers
                     //get inner exception......
                     Exception exp = exception;
                     if(exception.InnerException != null)
-                            exp = exception.InnerException.InnerException;
+                            exp = exception.InnerException;
 
-                    await HandleGeneralErrorAsync(context, exp);
+                    await HandleGeneralExceptionAsync(context, exp);
                     break;
             }
 
@@ -76,7 +71,7 @@ namespace DLHApi.Common.Handlers
             await WriteFormattedRespToHttpContextAsync(context, ex.StatusCode, jsonString);
         }
 
-        private async Task HandleGeneralErrorAsync(HttpContext context, Exception ex)
+        private async Task HandleGeneralExceptionAsync(HttpContext context, Exception ex)
         {
             var response = new DlhApiFailureResponse { Error = new DlhErrorModel { Message = ex.Message, Status = (int)HttpStatusCode.InternalServerError } };
 

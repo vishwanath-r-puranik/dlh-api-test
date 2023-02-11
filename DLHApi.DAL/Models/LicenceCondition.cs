@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DLHApi.DAL.Models;
+﻿namespace DLHApi.DAL.Models;
 
 public partial class LicenceCondition
 {

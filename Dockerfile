@@ -1,6 +1,5 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
@@ -38,7 +37,19 @@ ENV AuditDBServer=$auditdbserver
 ENV AuditDBName=$auditdbname
 ENV AuditDbUserId=$auditdbuserid
 ENV AuditDbPassword=$auditdbpassword
-ENV DocMergrUri="https://mock12-mock-doc-merge.apps.pesdev.hcscloud.net/mergepdfservice"
+ENV DocMergrUri="https://mock21-mock-doc-merge.apps.pesdev.hcscloud.net/mergepdfservice"
+ENV KeyCloakUri="https://keycloak-keycloak.apps.pesdev.hcscloud.net/realms/pesrealm/protocol/openid-connect/token"
+ENV KeyCloakUsername="test"
+ENV KeyCloakPassword="test123"
+ENV KeyCloakClient_id="pesclient"
+ENV KeyCloakClient_secret="EVWo7ElvQU97ANVBjL0oXR2CxbiFRUxy"
+ENV KeyCloakGrant_type="password"
+ENV DMSUri="https://apiuat.gov.ab.ca/uat/dms/merge/render-template-with-regions"
+ENV DMS_AccesToken_Uri="https://idpdev.gov.ab.ca/auth/realms/ServiceIntegration/protocol/openid-connect/token"
+ENV DMS_ClientID="dlh-app-uat"
+ENV DMS_ClientSecret="9fd027ec-aa4e-4894-922e-71ae450e5e9a"
+ENV DMS_GrantType="client_credentials"
+ENV CorsPolicy="dlhapiCors"
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Org.OpenAPITools.dll"]

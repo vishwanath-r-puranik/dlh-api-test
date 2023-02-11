@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using DLHApi.DAL.Models;
+﻿using DLHApi.DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DLHApi.DAL.Data;
 
 public partial class DlhdevDbContext : DbContext
 {
-    //public DlhdevdbContext()
-    //{
-    //}
+    
 
     public DlhdevDbContext(DbContextOptions<DlhdevDbContext> options)
         : base(options)
@@ -31,10 +27,7 @@ public partial class DlhdevDbContext : DbContext
 
     public virtual DbSet<LicenceDetail> LicenceDetails { get; set; }
 
-    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-    //        => optionsBuilder.UseSqlServer("server=192.168.1.10, 1433;database=dlhdevdb;user id=test;password=test; trustservercertificate=true");
-
+   
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Client>(entity =>

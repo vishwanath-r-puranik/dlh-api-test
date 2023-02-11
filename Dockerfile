@@ -52,4 +52,7 @@ ENV DMS_GrantType="client_credentials"
 ENV CorsPolicy="dlhapiCors"
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY ["DLHApi.OpenApiSpec/Files/dlhwithouthistory.docx", "/app/Files/"]
+COPY ["DLHApi.OpenApiSpec/Files/Dlhwithhistory.docx", "/app/Files/"]
+COPY ["DLHApi.OpenApiSpec/Files/Dlhwithouttable.docx", "/app/Files/"]
 ENTRYPOINT ["dotnet", "Org.OpenAPITools.dll"]

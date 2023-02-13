@@ -22,7 +22,7 @@ RUN dotnet publish "DLHApi.OpenApiSpec.csproj" -c Release -o /app/publish /p:Use
 
 FROM base AS final
 ARG dlhdbserver="199.215.140.171, 1433"
-ARG dlhdbname="MOVES_DLH_DEV"
+ARG dlhdbname="MOVES_DLH_APP_DEV"
 ARG dlhdbuserid="dlhapi"
 ARG dlhdbpassword="G9420hD7%*3hvsi4b"
 ARG auditdbserver="199.215.140.171, 1433"

@@ -30,14 +30,108 @@ env:
   
 
 jobs:
+  fetch:
+    name: Code checkout
+    #if: github.event_name == 'pull_request'
+    #if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'dev')
  
+    runs-on: ubuntu-latest
+    #environment: 
+    #  name: Dev
+    steps:
+    - name: Install OpenShift client
+      uses: redhat-actions/openshift-tools-installer@v1
+      with:
+        oc: 4
+    - name: Log in to OpenShift
+      uses: redhat-actions/oc-login@v1
+      with:
+        openshift_server_url: ${{ env.eOPENSHIFT_SERVER }}
+        openshift_token: ${{ env.eOPENSHIFT_TOKEN }}
+        insecure_skip_tls_verify: true
+        namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+        
+
+    - name: Install self hosted runners for actions-demo-app repository
+      uses: redhat-actions/openshift-actions-runner-installer@v1
+      id: install-runners 
+      with: 
+        github_pat: ${{ secrets.PAT }}     
+        runner_image: quay.io/vishwanath_puranik/sonar-dotnet-runner    # Default: quay.io/redhat-github-actions/runner [https://quay.io/organization/redhat-github-actions]
+        runner_labels: demo-runner                                    # Options: ./node-runner-14 ./java-runner-11 ./buildah-runner
+        runner_replicas: 1
+    - name: Echo outputs
+      shell: bash
+      run: |
+        echo "${{ toJSON(steps.install-runners.outputs) }}"
+  build: 
+    name: Self Hosted Sonar scan
+    
+    runs-on: [ self-hosted, demo-runner ]                       # Use the same labels we gave the runner above    
+    needs: fetch                           # Wait until the install-runner job above completes                
+
+    steps:
+    - name: set env variables
+      run: |
+          export PATH="$PATH:/root/.dotnet/tools"
+          export PATH="$PATH:/home/runner/sonar-scanner-msbuild-5.10.0.59947-netcoreapp3.0"
+          echo $PATH
+    - name: Checkout git repository
+      id: checkout1
+      uses: actions/checkout@v3
+    - name: echo path
+      run: echo $PATH
+    - name: dotnet scanner                               # Checkout a sample Java project to build & test on runner
+      run: |                                                   # https://github.com/redhat-actions/quarkus-quickstarts/tree/master/getting-started#readme
+
+          echo "Starting scanning the project"
+
+          dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="http://172.30.100.113:9000" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
+          #dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
+          #dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL_PES }}" /d:sonar.login="${{ secrets.SONAR_TOKEN_PES }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
+
+
+          echo "Building the project"
+
+          dotnet build DLHApi.sln
+
+
+          echo "Finishing scanning the project"
+
+          #dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN_PES }}"
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+  uninstall-self-hosted-runner: 
+    needs: [build]
+    name: Uninstall Self-Hosted Runners present in OpenShift
+    runs-on: ubuntu-20.04 
+
+    steps: 
+    - name: Log in to OpenShift
+      uses: redhat-actions/oc-login@v1
+      with:
+        openshift_server_url: ${{ env.eOPENSHIFT_SERVER }}
+        openshift_token: ${{ env.eOPENSHIFT_TOKEN }}
+        insecure_skip_tls_verify: true
+        namespace: ${{ env.OPENSHIFT_NAMESPACE }}
+
+    - run: helm ls
+
+    - run: |
+          if helm status ${{ env.HELM_RELEASE_NAME }}; then
+            echo "RELEASE_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "Release ${{ env.HELM_RELEASE_NAME }} not found"
+          fi
+    - run: helm uninstall ${{ env.HELM_RELEASE_NAME }}
+      if: env.RELEASE_EXISTS == 'true'
 
 
   build-code-image:
     name: Create Image, scan & push to ACR
     #if: github.event_name == 'pull_request'
     #if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'dev')
-
+    needs: [uninstall-self-hosted-runner]
     runs-on: ubuntu-latest
 
     steps:
@@ -56,12 +150,32 @@ jobs:
     - name: push to ACR
       run: docker push ${{ env.REGISTRY }}/024087d6-4aa7-4a52-90ec-0db8ffe1249e/dlh-dev/${{ env.APP-IMAGE }}:$GITHUB_SHA
 
+  scan-image:
+    name: Scan container image
+    #if: github.event_name == 'pull_request'
+    #if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'dev')
+    needs: [build-code-image]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Login to ACR
+      run: docker login ${{ env.REGISTRY }} -u ${{ secrets.ACR_USR }} -p ${{ secrets.ACR_PWD }}
+    - name: Anchore grype scan download
+      uses: anchore/scan-action/download-grype@v3
+      id: grype
+    - name: Anchore scan run
+      id: grype-scan
+      # run: ${{steps.grype.outputs.cmd}} ${{ env.REGISTRY }}/024087d6-4aa7-4a52-90ec-0db8ffe1249e/dlh-dev/${{ env.APP-IMAGE }}:$GITHUB_SHA -o json > scan-image-json.json
+      run: ${{steps.grype.outputs.cmd}} ${{ env.REGISTRY }}/024087d6-4aa7-4a52-90ec-0db8ffe1249e/dlh-dev/${{ env.APP-IMAGE }}:$GITHUB_SHA
+    #- name: New Inspect grype scan json report
+      #run: cat scan-image-json.json
+ 
  
   kustomize:
     name: Update manifests with digest
     #if: github.event_name == 'pull_request'
     #if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'dev')
-    needs: [build-code-image]
+    needs: [scan-image]
     runs-on: ubuntu-latest
 
     steps:

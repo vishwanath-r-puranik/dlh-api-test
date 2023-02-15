@@ -86,8 +86,8 @@ jobs:
 
           echo "Starting scanning the project"
 
-          dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="http://172.30.100.113:9000" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
-          #dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
+          #dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="http://172.30.100.113:9000" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
+          dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
           #dotnet sonarscanner begin /k:"dlh-api-test" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL_PES }}" /d:sonar.login="${{ secrets.SONAR_TOKEN_PES }}" /d:sonar.verbose=true /d:sonar.log.level="TRACE" /d:sonar.cs.vscoveragexml.reportsPaths="*.coveragexml" /d:sonar.cs.vstest.reportsPaths="*.trx"
 
 

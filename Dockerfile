@@ -21,14 +21,14 @@ FROM build AS publish
 RUN dotnet publish "DLHApi.OpenApiSpec.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
-ARG dlhdbserver="169.55.186.119, 9443"
-ARG dlhdbname="DLHDevDb"
-ARG dlhdbuserid="sa"
-ARG dlhdbpassword="Sql2019isfast"
-ARG auditdbserver="169.55.186.119, 9443"
-ARG auditdbname="DLHDevAudit"
-ARG auditdbuserid="sa"
-ARG auditdbpassword="Sql2019isfast"
+ARG dlhdbserver="199.215.140.171, 1433"
+ARG dlhdbname="MOVES_DLH_APP_DEV"
+ARG dlhdbuserid="dlhapi"
+ARG dlhdbpassword="G9420hD7%*3hvsi4b"
+ARG auditdbserver="199.215.140.171, 1433"
+ARG auditdbname="MOVES_DLH_APP_DEV"
+ARG auditdbuserid="dlhapi"
+ARG auditdbpassword="G9420hD7%*3hvsi4b"
 ENV DlhDBServer=$dlhdbserver  
 ENV DlhDBName=$dlhdbname  
 ENV DlhDbUserId=$dlhdbuserid

@@ -18,6 +18,7 @@ namespace Org.OpenAPITools.Filters
         /// <param name="context">OperationFilterContext</param>
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
+            //auto generated class, not sure if we should make any changes...
             var pars = context.ApiDescription.ParameterDescriptions;
 
             foreach (var par in pars)

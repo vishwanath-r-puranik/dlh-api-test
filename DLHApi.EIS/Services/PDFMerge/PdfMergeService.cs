@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using DLHApi.Common.Constants;
+using DLHApi.Common.Logger.Contracts;
 using DLHApi.Common.Utils;
 using DLHApi.EIS.Authentication;
 using DLHApi.EIS.Models;
@@ -15,10 +16,11 @@ namespace DLHApi.EIS.Services.PDFMerge
 	{
         private readonly IHttpClientFactory httpClientFactory;
         private readonly ITokenHandler tokenHandler;
+        private readonly ILoggerManager _logger;
 
         #region Constructors
 
-        public PdfMergeService(IHttpClientFactory httpClientFactory, ITokenHandler tokenHandler)
+        public PdfMergeService(IHttpClientFactory httpClientFactory, ITokenHandler tokenHandler, ILoggerManager logger)
         {
 
             this.httpClientFactory = httpClientFactory ??
@@ -26,6 +28,8 @@ namespace DLHApi.EIS.Services.PDFMerge
 
             this.tokenHandler = tokenHandler ??
                 throw new ApiException((string.Format(ErrorConstants.ObjNotSet, "tokenHandler")), (int)HttpStatusCode.FailedDependency);
+
+            this._logger = logger;
         }
 
         #endregion
@@ -34,15 +38,18 @@ namespace DLHApi.EIS.Services.PDFMerge
         {
             //get download url...
             var DocMergrUri = Environment.GetEnvironmentVariable("DMSUri");
+            _logger.LogInfo($"{Project.DLHAPIEIS} - Request document merge from {DocMergrUri}");
 
             return await DownloadPdfDataAsync(DocMergrUri, apiRequest);
         }
 
         #region Private functions
 
-        private async Task<byte[]?> DownloadPdfDataAsync(string endpointUrl, DocMergeApiRequest apiRequest)
+        private async Task<byte[]?> DownloadPdfDataAsync(string? endpointUrl, DocMergeApiRequest apiRequest)
         {
-            var fileName = "";
+            _logger.LogInfo($"{Project.DLHAPIEIS} - Calling DownloadPdfDataAsync...");
+
+            string fileName = "";
 
             //select file
             if (apiRequest == null || apiRequest?.Id == null)
@@ -52,10 +59,10 @@ namespace DLHApi.EIS.Services.PDFMerge
             else
                 fileName = "Dlhwithhistory.docx";
 
-            var fileLoc = Path.Combine(Directory.GetCurrentDirectory(), "Files", fileName);
+            string fileLoc = Path.Combine(Directory.GetCurrentDirectory(), "Files", fileName);
 
             //Encode file tto base 64...
-            string base64Encoded = Base64DocEncode(fileLoc);
+            string? base64Encoded = Base64DocEncode(fileLoc);
 
             Models.DMSRequest dmsRequest = new DMSRequest();
             dmsRequest.Template = base64Encoded;
@@ -65,7 +72,7 @@ namespace DLHApi.EIS.Services.PDFMerge
             DlhDockMergeDataReq dlhDockMergeDataReq = new DlhDockMergeDataReq();
             dlhDockMergeDataReq.Dlh = MapDlhReq(dlhDocMergeDetails);
 
-            if (apiRequest.historyInfo != null && apiRequest.historyInfo.Count > 0)
+            if (apiRequest?.historyInfo != null && apiRequest.historyInfo.Count > 0)
                 dlhDockMergeDataReq.DlhInfo = MapDlhHistoryInfo(apiRequest?.historyInfo);
 
             dmsRequest.jsonDataSet = System.Text.Json.JsonSerializer.Serialize(dlhDockMergeDataReq);
@@ -79,11 +86,13 @@ namespace DLHApi.EIS.Services.PDFMerge
             return null;
         }
 
-        private async Task<PdfMergeServiceResponse?> SendAsync<T>(string endpointUrl, HttpMethod httpMethod, T data = default)
+        private async Task<PdfMergeServiceResponse?> SendAsync<T>(string? endpointUrl, HttpMethod httpMethod, T? data = default)
         {
             StringContent? content = GetContent(data);
 
-            PdfMergeServiceResponse pdfResponse = null;
+            PdfMergeServiceResponse? pdfResponse = null;
+
+            if (string.IsNullOrEmpty(endpointUrl)) return null;
 
             var response = await GetResponse(endpointUrl, httpMethod, content);
 
@@ -132,14 +141,14 @@ namespace DLHApi.EIS.Services.PDFMerge
 
             var result = await client.SendAsync(request);
 
-            //string? jsonString = await result.Content.ReadAsStringAsync();
-
             return result;
 
         }
 
-        private string? Base64DocEncode(string fileLocation)
+        private string? Base64DocEncode(string? fileLocation)
         {
+            if (fileLocation == null) return null;
+
             byte[] rawBytes = File.ReadAllBytes(fileLocation);
 
             string? content = Convert.ToBase64String(rawBytes);
@@ -147,14 +156,16 @@ namespace DLHApi.EIS.Services.PDFMerge
             return content;
         }
 
-        private byte[]? Base64DocDecode(string encodedString)
+        private byte[]? Base64DocDecode(string? encodedString)
         {
+            if (encodedString == null) return null;
+
             byte[] content = Convert.FromBase64String(encodedString);
 
             return content;
         }
 
-        private DlhDocMergeDetails MapDlhDocMergeDetails(DocMergeApiRequest apiRequest)
+        private DlhDocMergeDetails MapDlhDocMergeDetails(DocMergeApiRequest? apiRequest)
         {
             DlhDocMergeDetails dlhDocMergeDetails = new DlhDocMergeDetails();
             dlhDocMergeDetails.ReportDate = apiRequest?.ReportDate?.ToString("yyyy/MM/dd");
@@ -178,20 +189,22 @@ namespace DLHApi.EIS.Services.PDFMerge
 
         private IList<DlhDocMergeDetails?>? MapDlhReq(DlhDocMergeDetails dlhDocMerge)
         {
-            IList<DlhDocMergeDetails> dlhDocMergeDetails = new List<DlhDocMergeDetails>();
+            IList<DlhDocMergeDetails?> dlhDocMergeDetails = new List<DlhDocMergeDetails?>();
             dlhDocMergeDetails.Add(dlhDocMerge);
 
             return dlhDocMergeDetails;
 
         }
 
-        private IList<DlhDocMergeHistoryDetails>? MapDlhHistoryInfo(IList<DlhistoryDisplayInfo>? docMergeDataHistoryInfos)
+        private IList<DlhDocMergeHistoryDetails>? MapDlhHistoryInfo(IList<DlhistoryDisplayInfo?>? docMergeDataHistoryInfos)
         {
             IList<DlhDocMergeHistoryDetails> dlhDocMergeDetailsString = new List<DlhDocMergeHistoryDetails>();
 
+            if (docMergeDataHistoryInfos == null || docMergeDataHistoryInfos.Count <= 0) return null;
+
             foreach (var item in docMergeDataHistoryInfos)
             {
-                DlhDocMergeHistoryDetails dlhDocMergeHistoryDetails = MapDlhHistoryInfoItem(item);
+                DlhDocMergeHistoryDetails? dlhDocMergeHistoryDetails = MapDlhHistoryInfoItem(item);
                 if (dlhDocMergeHistoryDetails != null)
                     dlhDocMergeDetailsString.Add(dlhDocMergeHistoryDetails);
             }

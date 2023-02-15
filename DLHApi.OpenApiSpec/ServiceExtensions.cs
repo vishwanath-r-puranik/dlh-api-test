@@ -8,6 +8,7 @@ using DLHApi.DAL.Services;
 using DLHApi.DTO.V1.Mapper;
 using DLHApi.EIS.Authentication;
 using DLHApi.EIS.Services.PDFMerge;
+using DLHApi.Shared;
 using Keycloak.AuthServices.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Org.OpenAPITools.Filters;
 using Org.OpenAPITools.OpenApi;
+using DLHApi.Common.Logger;
+using DLHApi.Common.Logger.Contracts;
 
 namespace DLHApi.OpenApiSpec
 {
@@ -55,15 +58,16 @@ namespace DLHApi.OpenApiSpec
             var dlhDbPassword = Environment.GetEnvironmentVariable("DlhDbPassword");
 
             services.AddHttpClient<PdfMergeService>();
+            services.AddHttpClient<AuditRepo>();
 
             services.AddDbContext<DlhdevDbContext>(options => options.UseSqlServer($"Server={dlhDbServer};Database={dlhDbName};User Id={dlhDbUserId};Password={dlhDbPassword};TrustServerCertificate=True"));
 
-            var auditDbServer = Environment.GetEnvironmentVariable("AuditDBServer");
-            var auditDbName = Environment.GetEnvironmentVariable("AuditDBName");
-            var auditDbUserId = Environment.GetEnvironmentVariable("AuditDbUserId");
-            var auditDbPassword = Environment.GetEnvironmentVariable("AuditDbPassword");
+            //var auditDbServer = Environment.GetEnvironmentVariable("AuditDBServer");
+            //var auditDbName = Environment.GetEnvironmentVariable("AuditDBName");
+            //var auditDbUserId = Environment.GetEnvironmentVariable("AuditDbUserId");
+            //var auditDbPassword = Environment.GetEnvironmentVariable("AuditDbPassword");
 
-            services.AddDbContext<DlhdevAuditContext>(options => options.UseSqlServer($"Server ={auditDbServer}; Database ={auditDbName}; User Id = {auditDbUserId}; Password ={auditDbPassword}; TrustServerCertificate = True"));
+            //services.AddDbContext<DlhdevAuditContext>(options => options.UseSqlServer($"Server ={auditDbServer}; Database ={auditDbName}; User Id = {auditDbUserId}; Password ={auditDbPassword}; TrustServerCertificate = True"));
 
         }
 
@@ -147,6 +151,7 @@ namespace DLHApi.OpenApiSpec
                 options.AddPolicy(name: Environment.GetEnvironmentVariable("CorsPolicy"),
                                   policy =>
                                   {
+                                      //* foor now, later we can give a fixed list of urls tobe allowed
                                       policy.WithOrigins("*")
                                       .AllowAnyHeader()
                                       .AllowAnyMethod();
@@ -154,6 +159,11 @@ namespace DLHApi.OpenApiSpec
             });
         }
 
+        // :: Extention method for loggers.
+        public static void ConfigureLoggerService(this IServiceCollection services)
+        {
+            services.AddSingleton<ILoggerManager, LoggerManager>();
+        }
     }
 }
 

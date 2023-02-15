@@ -11,7 +11,7 @@ namespace DLHApi.DAL.EISHandler.Authentication
             _tokenHandler = tokenHandler;
         }
 
-        public async Task<string> GetToken()
+        public async Task<string?> GetToken()
         {
             var accessToken =  await _tokenHandler.RetrieveToken();
             if (accessToken != null)

@@ -34,6 +34,7 @@ namespace Org.OpenAPITools
                 .ConfigureLogging(logging =>
                 {
                     logging.ClearProviders();
+                    //we should avoid logging to cconsole directly, search for better place to log...
                     logging.AddConsole();
                 });
     }

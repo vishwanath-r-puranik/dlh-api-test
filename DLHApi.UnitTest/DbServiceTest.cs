@@ -1,6 +1,8 @@
-﻿using DLHApi.DAL.Repo;
+﻿using DLHApi.Common.Logger.Contracts;
+using DLHApi.DAL.Repo;
 using DLHApi.DAL.RequestResponse;
 using DLHApi.DAL.Services;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,23 +13,21 @@ namespace DLHApi.UnitTest
 {
     public class DbServiceTest : IClassFixture<DlhDbFixture>
     {
-        public DbServiceTest(DlhDbFixture fixture)
+        public DlhDbFixture Fixture { get; }
+
+        public IDlhRepo _dlhrepo { get; set; }
+
+        private ILoggerManager _logger { get; }
+
+        public DbServiceTest(DlhDbFixture fixture, IDlhRepo dlhrepo)
         {
             Fixture = fixture;
             var dlhcontext = Fixture.CreateDlhContext();
-            _dlhrepo = new DlhRepo(dlhcontext);
+            _logger = Mock.Of<ILoggerManager>();
+            _dlhrepo = new DlhRepo(dlhcontext,_logger);
 
-            var dlhAuditContext = Fixture.CreateDlhAuditContext();
-            _auditRepo = new AuditRepo(dlhAuditContext);
-
-
+   
         }
-
-
-        public DlhDbFixture Fixture { get; }
-
-        public DlhRepo _dlhrepo { get;set; }
-        public AuditRepo _auditRepo { get; set; }
 
 
         [Fact]
@@ -52,20 +52,6 @@ namespace DLHApi.UnitTest
 
         }
 
-        [Fact]
-        public  void Add_Audit_Return_True()
-        {
-            try
-            {
-                var service = new AuditService(_auditRepo);
-                service.AddRequestAudit("123456789");
-                return;
-            }
-            catch (Exception ex)
-            {
-                Assert.True(false, ex.Message);
-            }
-  
-        }
+      
     }
 }

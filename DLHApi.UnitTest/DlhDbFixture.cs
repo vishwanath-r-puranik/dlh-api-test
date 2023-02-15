@@ -11,7 +11,7 @@ namespace DLHApi.UnitTest
     public class DlhDbFixture
     {
         private static string DlhDbConnectionString = $"Server={Environment.GetEnvironmentVariable("DlhDBServer")};Database={Environment.GetEnvironmentVariable("DlhDBName")};User Id={Environment.GetEnvironmentVariable("DlhDbUserId")};Password={Environment.GetEnvironmentVariable("DlhDbPassword")};TrustServerCertificate=True";
-        private static string DlhAuditConnectionString = $"Server={Environment.GetEnvironmentVariable("AuditDBServer")};Database={Environment.GetEnvironmentVariable("AuditDBName")};User Id={Environment.GetEnvironmentVariable("AuditDbUserId")};Password={Environment.GetEnvironmentVariable("AuditDbPassword")};TrustServerCertificate=True";
+      //  private static string DlhAuditConnectionString = $"Server={Environment.GetEnvironmentVariable("AuditDBServer")};Database={Environment.GetEnvironmentVariable("AuditDBName")};User Id={Environment.GetEnvironmentVariable("AuditDbUserId")};Password={Environment.GetEnvironmentVariable("AuditDbPassword")};TrustServerCertificate=True";
 
         private static readonly object _lock = new();
         private static bool _databaseInitialized;
@@ -30,13 +30,13 @@ namespace DLHApi.UnitTest
                         //context.SaveChanges();
                     }
 
-                    using (var context = CreateDlhAuditContext())
-                    {
-                        //context.Database.EnsureDeleted();
-                        context.Database.EnsureCreated();
+                    //using (var context = CreateDlhAuditContext())
+                    //{
+                    //    //context.Database.EnsureDeleted();
+                    //    context.Database.EnsureCreated();
 
-                        //context.SaveChanges();
-                    }
+                    //    //context.SaveChanges();
+                    //}
 
                     _databaseInitialized = true;
                 }
@@ -49,10 +49,10 @@ namespace DLHApi.UnitTest
                     .UseSqlServer(DlhDbConnectionString)
                     .Options);
 
-        public DlhdevAuditContext CreateDlhAuditContext()
-            => new DlhdevAuditContext(
-                new DbContextOptionsBuilder<DlhdevAuditContext>()
-                    .UseSqlServer(DlhAuditConnectionString)
-                    .Options);
+        //public DlhAuditContext CreateDlhAuditContext()
+        //    => new DlhAuditContext(
+        //        new DbContextOptionsBuilder<DlhAuditContext>()
+        //            .UseSqlServer(DlhAuditConnectionString)
+        //            .Options);
     }
 }

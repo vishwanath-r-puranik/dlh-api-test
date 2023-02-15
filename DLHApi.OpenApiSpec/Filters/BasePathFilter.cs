@@ -28,21 +28,21 @@ namespace Org.OpenAPITools.Filters
         /// <summary>
         /// Apply the filter
         /// </summary>
-        /// <param name="openapiDoc">OpenApiDocument</param>
+        /// <param name="swaggerDoc">OpenApiDocument</param>
         /// <param name="context">FilterContext</param>
-        public void Apply(OpenApiDocument openapiDoc, DocumentFilterContext context)
+        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            //openapiDoc.BasePath = BasePath;
+            //swaggerDoc.BasePath = BasePath;
 
-            var pathsToModify = openapiDoc.Paths.Where(p => p.Key.StartsWith(BasePath)).ToList();
+            var pathsToModify = swaggerDoc.Paths.Where(p => p.Key.StartsWith(BasePath)).ToList();
 
             foreach (var (key, value) in pathsToModify)
             {
                 if (key.StartsWith(BasePath))
                 {
                     var newKey = Regex.Replace(key, $"^{BasePath}", string.Empty);
-                    openapiDoc.Paths.Remove(key);
-                    openapiDoc.Paths.Add(newKey, value);
+                    swaggerDoc.Paths.Remove(key);
+                    swaggerDoc.Paths.Add(newKey, value);
                 }
             }
         }

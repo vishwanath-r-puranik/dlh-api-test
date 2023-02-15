@@ -11,13 +11,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Moq;
 using Org.OpenAPITools.Controllers;
+using DLHApi.Common.Logger.Contracts;
 
 namespace DLHApi.UnitTest
 {
     public class DLHApiControllerTest: IClassFixture<DlhDbFixture>
     {
         private readonly DLHApiController _dLHApiController;
-        private readonly ILogger<DLHApiController> _logger;
+        private readonly ILoggerManager _logger;
         private readonly DlhistoryModelMapper _dlhmapper;
 
         private DlhDbFixture Fixture { get; }
@@ -29,20 +30,21 @@ namespace DLHApi.UnitTest
         private IMapper _mapper { get; set; }
         private ITokenHandler _tokenHandler { get; set; }
 
-        public DLHApiControllerTest(DlhDbFixture  fixture)
+        public DLHApiControllerTest(DlhDbFixture  fixture, ITokenHandler tokenHandler, DLHApiController dLHApiController)
         {
             Fixture = fixture;
+            _tokenHandler = tokenHandler;
+            _dLHApiController = dLHApiController;
+
+            _logger = Mock.Of<ILoggerManager>();
 
             var dlhcontext = Fixture.CreateDlhContext();
-            _dlhrepo = new DlhRepo(dlhcontext);
+            _dlhrepo = new DlhRepo(dlhcontext, _logger);
             _dlhservice = new DlhService(_dlhrepo);
 
-            var dlhAuditContext = Fixture.CreateDlhAuditContext();
-            _auditRepo = new AuditRepo(dlhAuditContext);
-            _auditservice = new AuditService(_auditRepo);
-
-
-            _logger = Mock.Of<ILogger<DLHApiController>>();
+            _tokenHandler = new TokenHandler();
+           
+          
 
             var mapperConfig = new MapperConfiguration(cfg => cfg.AddProfile<DlhResponseProfile>());
             _mapper= mapperConfig.CreateMapper();
@@ -51,10 +53,17 @@ namespace DLHApi.UnitTest
             services.AddHttpClient<PdfMergeService>();
 
             IHttpClientFactory factory = services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
-            
-            _pdfservice = new PdfMergeService(factory, _tokenHandler);
+            _pdfservice = new PdfMergeService(factory, _tokenHandler,_logger);
 
-            _dlhmapper = new DlhistoryModelMapper(_dlhservice, _mapper, _pdfservice,_auditservice);
+            services.AddHttpClient<AuditRepo>();
+            factory = services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
+
+            _auditRepo = new AuditRepo(factory,_tokenHandler,_logger);
+            _auditservice = new AuditService(_auditRepo);
+
+           
+
+            _dlhmapper = new DlhistoryModelMapper(_dlhservice, _mapper, _pdfservice,_auditservice,_logger);
 
             _dLHApiController = new DLHApiController(_dlhmapper, _logger);
         }
@@ -72,7 +81,7 @@ namespace DLHApi.UnitTest
         public async void Get_ReturnsFile()
         {
 
-            var res = await _dLHApiController.DLHDocumentMvidGet(123456789);
+            var res = await _dLHApiController.DLHDocumentMergeMvidGet(123456789);
 
             Assert.IsType<FileContentResult>(res);
 

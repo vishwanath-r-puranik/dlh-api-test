@@ -9,6 +9,7 @@
  */
 
 using System;
+using System.IO;
 using DLHApi.Common.Handlers;
 using DLHApi.OpenApiSpec;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using NLog;
+using NLog.Extensions.Logging;
 using Org.OpenAPITools.Formatters;
 
 namespace Org.OpenAPITools
@@ -34,6 +37,10 @@ namespace Org.OpenAPITools
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            var config = new ConfigurationBuilder()
+                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
+            LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
         }
 
         /// <summary>
@@ -57,6 +64,9 @@ namespace Org.OpenAPITools
 
             //:: Add CORS
             services.ConfigureCors();
+
+            // :: Invoke logger extention
+            services.ConfigureLoggerService();
 
             // Add framework services.
             services

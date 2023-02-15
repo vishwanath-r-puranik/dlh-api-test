@@ -8,7 +8,6 @@ namespace DLHApi.DAL.RequestResponse
         public string? Message { get; set; }
         public DlhistoryModel? DlhistoryModel { get; set; }
 
-       // public DlhFile? DlhFile { get; set; }
     }
 
     public class DlhFile

@@ -13,6 +13,6 @@
         public string? GDl { get; set; }
         public string? GDlExitDate { get; set; }
         public string? Conditions { get; set; }
-        public IList<DlhistoryDisplayInfo>? historyInfo { get; set; }
+        public IList<DlhistoryDisplayInfo?>? historyInfo { get; set; }
     }
 }

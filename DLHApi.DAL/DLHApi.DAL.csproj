@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\DlhdevAuditContext.cs" />
+    <Compile Remove="Services\IAuditService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Data\AuditDbscript.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="IronPdf" Version="2023.1.11416" />
     <PackageReference Include="IronPdf.Native.Chrome.Linux" Version="2023.1.11387" />
     <PackageReference Include="IronPdf.Native.Chrome.MacOS" Version="2023.1.11387" />
@@ -18,11 +27,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="5.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DLHApi.Common\DLHApi.Common.csproj" />
     <ProjectReference Include="..\DLHApi.EIS\DLHApi.EIS.csproj" />
+    <ProjectReference Include="..\DLHApi.Shared\DLHApi.Shared.csproj" />
     <!--DAL->EIS-->
     <!--<ProjectReference Include="..\DLHApi.EIS\DLHApi.EIS.csproj" />-->
   </ItemGroup>

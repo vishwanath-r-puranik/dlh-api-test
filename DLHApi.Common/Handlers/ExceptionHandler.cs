@@ -34,11 +34,15 @@ namespace DLHApi.Common.Handlers
             switch (exception)
             {
                 case ApiException ex:
-                    if (ex?.ValidationErrors is not null)
+                    if (ex != null)
                     {
-                        await HandleDlhValidationErrorAsync(context, ex);
+                        if (ex?.ValidationErrors is not null)
+                        {
+                            await HandleDlhValidationErrorAsync(context, ex);
+                        }
+                        await HandleDlhApiErrorAsync(context, ex);
                     }
-                    await HandleDlhApiErrorAsync(context, ex);
+                    
                     break;
 
                 default:
@@ -55,7 +59,7 @@ namespace DLHApi.Common.Handlers
 
         private async Task HandleDlhApiErrorAsync(HttpContext context, ApiException ex)
         {
-            var response = new DlhApiFailureResponse { Error = new DlhErrorModel { Message = ex.Message, Status = ex.StatusCode } };
+            var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ex.Message, Status = ex.StatusCode });
 
             var jsonString = JsonSerializer.Serialize(response);
 
@@ -64,7 +68,7 @@ namespace DLHApi.Common.Handlers
 
         private async Task HandleDlhValidationErrorAsync(HttpContext context, ApiException ex)
         {
-            var response = new DlhApiFailureResponse { Error = new DlhErrorModel { Message = ErrorConstants.ValidationError, ValidationErrors = (IEnumerable<DlhValidationError>)ex.ValidationErrors, Status = ex.StatusCode } };
+            var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ErrorConstants.ValidationError, ValidationErrors = (IEnumerable<DlhValidationError>?)ex.ValidationErrors, Status = ex.StatusCode });
 
             var jsonString = JsonSerializer.Serialize(response);
 
@@ -73,7 +77,7 @@ namespace DLHApi.Common.Handlers
 
         private async Task HandleGeneralExceptionAsync(HttpContext context, Exception ex)
         {
-            var response = new DlhApiFailureResponse { Error = new DlhErrorModel { Message = ex.Message, Status = (int)HttpStatusCode.InternalServerError } };
+            var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ex.Message, Status = (int)HttpStatusCode.InternalServerError } ); 
 
             var jsonString = JsonSerializer.Serialize(response);
 

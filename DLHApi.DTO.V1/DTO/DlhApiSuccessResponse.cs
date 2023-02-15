@@ -4,13 +4,13 @@ namespace DLHApi.DTO.V1.DTO
 {
     public class DlhApiSuccessResponse<T> : IDlhApiResponse
     {
-        public T Data { get; set; }
+        public T? Data { get; set; }
 
         public DlhApiSuccessResponse()
         {
         }
 
-        public DlhApiSuccessResponse(T data)
+        public DlhApiSuccessResponse(T? data)
         {
             Data = data;
         }

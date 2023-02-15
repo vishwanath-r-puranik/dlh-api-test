@@ -40,13 +40,13 @@ namespace Org.OpenAPITools.Authentication
         /// <copydoc cref="AuthorizationHandler{T}.HandleRequirementAsync" />
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, ApiKeyRequirement requirement)
         {
-            SucceedRequirementIfApiKeyPresentAndValid(context, requirement);
+            //SucceedRequirementIfApiKeyPresentAndValid(context, requirement);
             return Task.CompletedTask;
         }
 
-        private void SucceedRequirementIfApiKeyPresentAndValid(AuthorizationHandlerContext context, ApiKeyRequirement requirement)
-        {
-
-        }
+        //private void SucceedRequirementIfApiKeyPresentAndValid(AuthorizationHandlerContext context, ApiKeyRequirement requirement)
+        //{
+        //    might add in logic later....
+        //}
     }
 }

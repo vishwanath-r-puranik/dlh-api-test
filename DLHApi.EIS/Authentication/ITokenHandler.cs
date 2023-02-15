@@ -2,7 +2,7 @@
 {
     public  interface ITokenHandler
     {
-        Task<string> RetrieveToken();
-        Task<string> RetrieveAccessToken();
+        Task<string?> RetrieveToken();
+        Task<string?> RetrieveAccessToken();
     }
 }

@@ -1,8 +1,6 @@
-﻿using DLHApi.Shared;
-
-namespace DLHApi.DAL.Repo
+﻿namespace DLHApi.Shared
 {
-    public interface IAuditRepo
+    public interface IAuditService
     {
         Task<AuditResponse> AddRequestAudit(CreateAuditRequest audit);
         Task<AuditResponse> UpdateRequestAudit(UpdateAuditRequest audit);

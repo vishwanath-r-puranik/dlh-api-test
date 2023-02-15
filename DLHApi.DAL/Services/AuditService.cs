@@ -1,4 +1,5 @@
 ﻿using DLHApi.DAL.Repo;
+using DLHApi.Shared;
 
 namespace DLHApi.DAL.Services
 {
@@ -11,9 +12,14 @@ namespace DLHApi.DAL.Services
             _auditRepo = auditRepo;
         }
 
-        public void AddRequestAudit(string mvid)
+        public Task<AuditResponse> AddRequestAudit(CreateAuditRequest audit)
         {
-            _auditRepo.AddRequestAudit(mvid);    
+          return  _auditRepo.AddRequestAudit(audit);    
+        }
+
+        public Task<AuditResponse> UpdateRequestAudit(UpdateAuditRequest audit)
+        {
+          return   _auditRepo.UpdateRequestAudit(audit);
         }
     }
 }

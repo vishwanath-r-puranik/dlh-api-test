@@ -5,9 +5,14 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace Org.OpenAPITools.Formatters
 {
-    // Input Type Formatter to allow model binding to Streams
+    /// <summary>
+    /// Input Type Formatter to allow model binding to Streams
+    /// </summary>
     public class InputFormatterStream : InputFormatter
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public InputFormatterStream()
         {
             SupportedMediaTypes.Add("application/octet-stream");

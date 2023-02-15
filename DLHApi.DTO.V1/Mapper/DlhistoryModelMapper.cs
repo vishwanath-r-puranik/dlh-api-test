@@ -1,12 +1,14 @@
 ﻿using System.Net;
 using AutoMapper;
 using DLHApi.Common.Constants;
+using DLHApi.Common.Logger.Contracts;
 using DLHApi.Common.Utils;
 using DLHApi.DAL.RequestResponse;
 using DLHApi.DAL.Services;
 using DLHApi.DTO.V1.DTO;
 using DLHApi.EIS.Models;
 using DLHApi.EIS.Services.PDFMerge;
+using DLHApi.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DLHApi.DTO.V1.Mapper
@@ -17,42 +19,36 @@ namespace DLHApi.DTO.V1.Mapper
         private readonly IMapper _mapper;
         private readonly IAuditService _auditService;
         private readonly IPdfMergeService _pdfMergeService;
+        private readonly ILoggerManager _logger;
 
-        public DlhistoryModelMapper(IDlhService dlhService, IMapper mapper, IPdfMergeService pdfMergeService, IAuditService auditService)
+        public DlhistoryModelMapper(IDlhService dlhService, IMapper mapper, IPdfMergeService pdfMergeService, IAuditService auditService, ILoggerManager logger)
         {
             this._dlhService = dlhService;
             this._mapper = mapper;
             _pdfMergeService = pdfMergeService;
             _auditService = auditService;
+            this._logger = logger;
         }
 
         public async Task<IActionResult> DLHHistoryData(int mvid)
         {
-
-            //just to show
-            if (mvid == 432)
-            {
-                var validationError = new List<Common.Models.DlhValidationError>
-                {
-                    new Common.Models.DlhValidationError("Mvid", string.Format(ErrorConstants.IncorrectMvID, mvid))
-                };
-
-                throw new ApiException(validationError, (int)HttpStatusCode.Unauthorized);
-            }
-
             DlhRequest req = new DlhRequest { Mvid = mvid };
 
             var res = await _dlhService.GelDlhByMvid(req);
 
-            if (res == null)
+            if (res == null) 
+            {
+                _logger.LogError($"{Project.DLHAPIDTO} - {ErrorConstants.NoData} {(int)HttpStatusCode.NotFound}");
                 throw new ApiException(ErrorConstants.NoData, (int)HttpStatusCode.NotFound);
-
+            }
             var resDTO = new DlhApiSuccessResponse<DTO.DlhistoryModel>();
             if (res != null && res.Success==true && res.DlhistoryModel != null)
             {
+
                 //override this mapper.....
                 resDTO.Data = _mapper.Map<DTO.DlhistoryModel>(res.DlhistoryModel);
 
+                _logger.LogInfo($"{Project.DLHAPIDTO} - Fetched data successfully and returning to OpenApi ");
                 return new OkObjectResult(resDTO.Data);
             }
 
@@ -62,10 +58,25 @@ namespace DLHApi.DTO.V1.Mapper
 
         public async Task<IActionResult> DLHDocumentMerge(int mvid)
         {
+            // Create audit record, unique request id should come from the queue, temporarily appending audit for now
+            var requestId = "audit-" + mvid.ToString();
+             AddRequestAudit(mvid.ToString(), requestId);
 
             DlhRequest req = new DlhRequest { Mvid = mvid };
 
             var res = await _dlhService.GelDlhByMvid(req);
+
+            //update audit record status to DataRetrieved
+            _logger.LogInfo($"{Project.DLHAPIDTO} - Update audit table");
+            var audit = new UpdateAuditRequest()
+            {
+                RequestId = requestId,
+                Mvid = mvid.ToString(),
+                RecordStatus = ReqStatus.DlhDataRetrieved.ToString(),
+                DataRetrievedDateTimeStamp = DateTime.Now,
+            };
+            UpdateRequestAudit(audit);
+
 
             var resDTO = _mapper.Map<DTO.DlhistoryModel>(res.DlhistoryModel);
 
@@ -75,10 +86,12 @@ namespace DLHApi.DTO.V1.Mapper
             //DTO->EIS
             var fileRes = await _pdfMergeService.GelDlhDocumentByMvid(docMergeApiRequest);
 
-            //_auditService.AddRequestAudit(mvid.ToString());
 
             if (fileRes == null)
+            {
+                _logger.LogError($"{Project.DLHAPIDTO} - DLH PDF Document not found for Mvid:{mvid}");
                 throw new ApiException(ErrorConstants.NoData, (int)HttpStatusCode.NotFound);
+            }
 
             var fileResDTO = new DlhApiSuccessResponse<byte[]>();
             if (fileRes != null)
@@ -90,6 +103,17 @@ namespace DLHApi.DTO.V1.Mapper
                     FileDownloadName = "DlhPdf"
                 };
 
+                //update audit record status to ReportGenerated
+               audit = new UpdateAuditRequest()
+                {
+                    RequestId = requestId,
+                    Mvid = mvid.ToString(),
+                    RecordStatus = ReqStatus.ReportGenerated.ToString(),
+                    ReportGeneratedDateTimeStamp = DateTime.Now,
+                };
+                UpdateRequestAudit(audit);
+
+                _logger.LogInfo($"{Project.DLHAPIDTO} - DLH PDF Document found and sending to OpenApi");
                 return result;
             }
 
@@ -131,26 +155,29 @@ namespace DLHApi.DTO.V1.Mapper
 
         }
 
-        private IList<EIS.Models.DlhistoryDisplayInfo> MapHistoryInfoList(IList<DTO.DlhistoryDisplayInfo> dlhistoryInfoListModel)
+        private IList<EIS.Models.DlhistoryDisplayInfo?>? MapHistoryInfoList(IList<DTO.DlhistoryDisplayInfo?>? dlhistoryInfoListModel)
         {
-            IList<EIS.Models.DlhistoryDisplayInfo> dlhistoryDisplayInfos = new List<EIS.Models.DlhistoryDisplayInfo>();
+            IList<EIS.Models.DlhistoryDisplayInfo?>? dlhistoryDisplayInfos = new List<EIS.Models.DlhistoryDisplayInfo?>();
 
             if (dlhistoryInfoListModel != null && dlhistoryInfoListModel.Count > 0)
             {
-                EIS.Models.DlhistoryDisplayInfo dlhistoryDisplayInfoItem;
+                EIS.Models.DlhistoryDisplayInfo? dlhistoryDisplayInfoItem;
 
                 foreach (var item in dlhistoryInfoListModel)
                 {
-                    dlhistoryDisplayInfoItem = MapHistoryInfo(item);
-                    if (dlhistoryDisplayInfoItem != null)
-                        dlhistoryDisplayInfos.Add(dlhistoryDisplayInfoItem);
+                    if (item != null)
+                    {
+                        dlhistoryDisplayInfoItem = MapHistoryInfo(item);
+                        if (dlhistoryDisplayInfoItem != null)
+                            dlhistoryDisplayInfos.Add(dlhistoryDisplayInfoItem);
+                    }
                 }
             }
             return dlhistoryDisplayInfos;
 
         }
 
-        private EIS.Models.DlhistoryDisplayInfo MapHistoryInfo(DTO.DlhistoryDisplayInfo dlhistoryInfoModel)
+        private EIS.Models.DlhistoryDisplayInfo? MapHistoryInfo(DTO.DlhistoryDisplayInfo dlhistoryInfoModel)
         {
             if (dlhistoryInfoModel != null)
                 return new EIS.Models.DlhistoryDisplayInfo()
@@ -163,7 +190,39 @@ namespace DLHApi.DTO.V1.Mapper
             return null;
 
         }
-     
+
+
+        private async void AddRequestAudit(string mvid, string requestid)
+        {
+            try
+            {
+                var audit = new CreateAuditRequest
+                {
+                    Mvid = mvid,
+                    RequestId = requestid
+                };
+                var auditResp = await _auditService.AddRequestAudit(audit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{Project.DLHAPIDTO} - AddRequestAudit failed. {ex.Message}");
+                throw new ApiException(ex);
+            }
+        }
+
+        private async void UpdateRequestAudit(UpdateAuditRequest audit)
+        {
+            try
+            {              
+                var auditResp = await _auditService.UpdateRequestAudit(audit);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{Project.DLHAPIDTO} - UpdateRequestAudit failed. {ex.Message}");
+                throw new ApiException(ex);
+            }
+        }
+
         #endregion
     }
 }

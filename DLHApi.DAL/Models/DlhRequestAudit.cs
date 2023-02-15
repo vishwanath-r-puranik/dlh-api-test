@@ -3,7 +3,7 @@
 public partial class DlhRequestAudit
 {
 
-    public string RequestId { get; set; }
+    public string? RequestId { get; set; }
     public DateTime? RequestDateTimeStamp { get; set; }
     public DateTime? PaymentDateTimeStamp { get; set; }
     public string? Mvid { get; set; }

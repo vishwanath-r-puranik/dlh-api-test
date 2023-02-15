@@ -11,10 +11,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using DLHApi.Common.Constants;
+using DLHApi.Common.Logger.Contracts;
 using DLHApi.DTO.V1.Mapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Org.OpenAPITools.Attributes;
 using Org.OpenAPITools.Models;
@@ -29,9 +30,12 @@ namespace Org.OpenAPITools.Controllers
     public class DLHApiController : ControllerBase
     {
         private readonly DlhistoryModelMapper _dlhistoryModelMapper;
-        private readonly ILogger _logger;
+        private readonly ILoggerManager _logger;
 
-        public DLHApiController(DlhistoryModelMapper dlhistoryModelMapper, ILogger<DLHApiController> logger)
+        /// <summary>
+        /// 
+        /// </summary>
+        public DLHApiController(DlhistoryModelMapper dlhistoryModelMapper, ILoggerManager logger)
         {
             this._dlhistoryModelMapper = dlhistoryModelMapper;
             this._logger = logger;
@@ -40,9 +44,9 @@ namespace Org.OpenAPITools.Controllers
         /// <summary>
         /// List DLH data
         /// </summary>
-        /// <remarks>Returns the pdf document with other information</remarks>
+        /// <remarks>Returns the drivers history information for input mvid</remarks>
         /// <param name="mvid"></param>
-        /// <response code="200">Returns the pdf document with other information</response>
+        /// <response code="200">Returns the drivers history information for input mvid</response>
         /// <response code="400">Invalid ID supplied</response>
         /// <response code="404">Request document not found</response>
         /// <response code="405">Validation exception</response>
@@ -50,25 +54,24 @@ namespace Org.OpenAPITools.Controllers
         [Route("/DLHDocument/{mvid}")]
         [ValidateModelState]
         [SwaggerOperation("DLHDocumentMvidGet")]
-        [SwaggerResponse(statusCode: 200, type: typeof(DLHApiPDFData), description: "Returns the pdf document with other information")]
+        [SwaggerResponse(statusCode: 200, type: typeof(DLHApiPDFData), description: "Returns the drivers history information for input mvid")]
         [Authorize]
         public async Task<IActionResult> DLHDocumentMvidGet([FromRoute(Name = "mvid")][Required] int mvid)
         {
-            _logger.LogInformation($"Logger Received DLH request for Mvid:{mvid} on {DateTime.Now.ToString()}.");
-  
+            _logger.LogInfo($"{Project.DLHAPIOpenSpec} - DLH data requested for Mvid:{mvid}");
             return await _dlhistoryModelMapper.DLHHistoryData(mvid);
         
         }
 
-        ///// <summary>
-        ///// List DLH document
-        ///// </summary>
-        ///// <remarks>Returns the pdf document from 3 party api</remarks>
-        ///// <param name="mvid"></param>
-        ///// <response code="200">Returns the pdf document with other information</response>
-        ///// <response code="400">Invalid ID supplied</response>
-        ///// <response code="404">Request document not found</response>
-        ///// <response code="405">Validation exception</response>
+        /// <summary>
+        /// List DLH document
+        /// </summary>
+        /// <remarks>Returns the pdf document from 3 party api</remarks>
+        /// <param name="mvid"></param>
+        /// <response code="200">Returns the pdf document with other information</response>
+        /// <response code="400">Invalid ID supplied</response>
+        /// <response code="404">Request document not found</response>
+        /// <response code="405">Validation exception</response>
         [HttpGet]
         [Route("/DLHDocument/merge/{mvid}")]
         [ValidateModelState]
@@ -77,7 +80,7 @@ namespace Org.OpenAPITools.Controllers
         [Authorize]
         public async Task<IActionResult> DLHDocumentMergeMvidGet([FromRoute(Name = "mvid")][Required] int mvid)
         {
-
+            _logger.LogInfo($"{Project.DLHAPIOpenSpec} - DLH PDF Document requested for Mvid:{mvid}");
             return await _dlhistoryModelMapper.DLHDocumentMerge(mvid);
 
         }

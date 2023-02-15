@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using System.Web.Mvc;
+using System.Web;
 using DLHApi.Common.Models;
 
 namespace DLHApi.Common.Utils
@@ -26,13 +26,5 @@ namespace DLHApi.Common.Utils
             ValidationErrors = errors;
             StatusCode = statusCode;
         }
-
-        //public ApiException(ModelStateDictionary modelState, int statusCode = (int)HttpStatusCode.BadRequest)
-        //{
-        //    ValidationErrors = modelState.Keys.SelectMany(key => modelState[key].Errors.Select(x => new DlhValidationError(key, x.ErrorMessage))).ToList();
-        //    StatusCode = statusCode;
-        //}
-
-        //can add more......
     }
 }

@@ -30,11 +30,11 @@ namespace DLHApi.UnitTest
         private IMapper _mapper { get; set; }
         private ITokenHandler _tokenHandler { get; set; }
 
-        public DLHApiControllerTest(DlhDbFixture  fixture, ITokenHandler tokenHandler, DLHApiController dLHApiController)
+        public DLHApiControllerTest(DlhDbFixture  fixture)
         {
             Fixture = fixture;
-            _tokenHandler = tokenHandler;
-            _dLHApiController = dLHApiController;
+            //_tokenHandler = tokenHandler;
+            //_dLHApiController = dLHApiController;
 
             _logger = Mock.Of<ILoggerManager>();
 

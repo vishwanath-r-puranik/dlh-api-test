@@ -28,7 +28,7 @@ namespace DLHApi.Common.Handlers
                 await HandleExceptionAsync(httpContext, ex);
             }
         }
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
 
             switch (exception)
@@ -57,7 +57,7 @@ namespace DLHApi.Common.Handlers
 
         }
 
-        private async Task HandleDlhApiErrorAsync(HttpContext context, ApiException ex)
+        private static async Task HandleDlhApiErrorAsync(HttpContext context, ApiException ex)
         {
             var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ex.Message, Status = ex.StatusCode });
 
@@ -66,16 +66,16 @@ namespace DLHApi.Common.Handlers
             await WriteFormattedRespToHttpContextAsync(context, ex.StatusCode, jsonString!);
         }
 
-        private async Task HandleDlhValidationErrorAsync(HttpContext context, ApiException ex)
+        private static async Task HandleDlhValidationErrorAsync(HttpContext context, ApiException ex)
         {
-            var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ErrorConstants.ValidationError, ValidationErrors = (IEnumerable<DlhValidationError>?)ex.ValidationErrors, Status = ex.StatusCode });
+            var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ErrorConstants.ValidationError, ValidationErrors = ex.ValidationErrors, Status = ex.StatusCode });
 
             var jsonString = JsonSerializer.Serialize(response);
 
             await WriteFormattedRespToHttpContextAsync(context, ex.StatusCode, jsonString);
         }
 
-        private async Task HandleGeneralExceptionAsync(HttpContext context, Exception ex)
+        private static async Task HandleGeneralExceptionAsync(HttpContext context, Exception ex)
         {
             var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ex.Message, Status = (int)HttpStatusCode.InternalServerError } ); 
 

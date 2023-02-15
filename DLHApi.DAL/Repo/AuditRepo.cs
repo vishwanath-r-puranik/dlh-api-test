@@ -38,6 +38,9 @@ namespace DLHApi.DAL.Repo
 
             try
             {
+                if (AuditEndPointBase == null)
+                    throw new ApiException(ErrorConstants.InvalidUrl, (int)HttpStatusCode.BadRequest);
+
                 _logger.LogInfo($"{Project.DLHAPIDAL} - start AddRequestAudit");
                 var client = _httpClientFactory.CreateClient("AuditRepo");
 
@@ -74,6 +77,9 @@ namespace DLHApi.DAL.Repo
 
             try
             {
+                if (AuditEndPointBase == null)
+                    throw new ApiException(ErrorConstants.InvalidUrl, (int)HttpStatusCode.BadRequest);
+                
                 _logger.LogInfo($"{Project.DLHAPIDAL} - start UpdateRequestAudit");
                 var client = _httpClientFactory.CreateClient("AuditRepo");
 

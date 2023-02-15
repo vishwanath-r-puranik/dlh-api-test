@@ -42,7 +42,7 @@ namespace DLHApi.DTO.V1.Mapper
                 throw new ApiException(ErrorConstants.NoData, (int)HttpStatusCode.NotFound);
             }
             var resDTO = new DlhApiSuccessResponse<DTO.DlhistoryModel>();
-            if (res != null && res.Success==true && res.DlhistoryModel != null)
+            if (res.Success && res.DlhistoryModel != null)
             {
 
                 //override this mapper.....
@@ -60,7 +60,7 @@ namespace DLHApi.DTO.V1.Mapper
         {
             // Create audit record, unique request id should come from the queue, temporarily appending audit for now
             var requestId = "audit-" + mvid.ToString();
-             AddRequestAudit(mvid.ToString(), requestId);
+             await AddRequestAudit(mvid.ToString(), requestId);
 
             DlhRequest req = new DlhRequest { Mvid = mvid };
 
@@ -75,7 +75,7 @@ namespace DLHApi.DTO.V1.Mapper
                 RecordStatus = ReqStatus.DlhDataRetrieved.ToString(),
                 DataRetrievedDateTimeStamp = DateTime.Now,
             };
-            UpdateRequestAudit(audit);
+            await UpdateRequestAudit(audit);
 
 
             var resDTO = _mapper.Map<DTO.DlhistoryModel>(res.DlhistoryModel);
@@ -94,9 +94,10 @@ namespace DLHApi.DTO.V1.Mapper
             }
 
             var fileResDTO = new DlhApiSuccessResponse<byte[]>();
-            if (fileRes != null)
+            fileResDTO.Data = _mapper.Map<byte[]>(fileRes);
+
+            if (fileResDTO.Data != null)
             {
-                fileResDTO.Data = _mapper.Map<byte[]>(fileRes);
 
                 FileContentResult result = new FileContentResult(fileResDTO.Data, "application/pdf")
                 {
@@ -111,7 +112,7 @@ namespace DLHApi.DTO.V1.Mapper
                     RecordStatus = ReqStatus.ReportGenerated.ToString(),
                     ReportGeneratedDateTimeStamp = DateTime.Now,
                 };
-                UpdateRequestAudit(audit);
+                await UpdateRequestAudit(audit);
 
                 _logger.LogInfo($"{Project.DLHAPIDTO} - DLH PDF Document found and sending to OpenApi");
                 return result;
@@ -130,14 +131,14 @@ namespace DLHApi.DTO.V1.Mapper
                 return new DocMergeApiRequest()
                 {
 
-                    MVID = mvid.ToString(),
+                    MVID = mvid.ToMVIDFormat(),
                     ReportDate = DateTime.Now
                 };
 
             return new DocMergeApiRequest()
             {
                 Id = 001,
-                MVID = (dlhistoryModel.MVID != null) ? dlhistoryModel.MVID : mvid.ToString(),
+                MVID = (dlhistoryModel.MVID != null) ? dlhistoryModel.MVID : mvid.ToMVIDFormat(),
                 FullName = dlhistoryModel.FullName,
                 Dob = dlhistoryModel.Dob,
                 Address = string.Empty, 
@@ -155,7 +156,7 @@ namespace DLHApi.DTO.V1.Mapper
 
         }
 
-        private IList<EIS.Models.DlhistoryDisplayInfo?>? MapHistoryInfoList(IList<DTO.DlhistoryDisplayInfo?>? dlhistoryInfoListModel)
+        private static IList<EIS.Models.DlhistoryDisplayInfo?>? MapHistoryInfoList(IList<DTO.DlhistoryDisplayInfo?>? dlhistoryInfoListModel)
         {
             IList<EIS.Models.DlhistoryDisplayInfo?>? dlhistoryDisplayInfos = new List<EIS.Models.DlhistoryDisplayInfo?>();
 
@@ -177,7 +178,7 @@ namespace DLHApi.DTO.V1.Mapper
 
         }
 
-        private EIS.Models.DlhistoryDisplayInfo? MapHistoryInfo(DTO.DlhistoryDisplayInfo dlhistoryInfoModel)
+        private static EIS.Models.DlhistoryDisplayInfo? MapHistoryInfo(DTO.DlhistoryDisplayInfo dlhistoryInfoModel)
         {
             if (dlhistoryInfoModel != null)
                 return new EIS.Models.DlhistoryDisplayInfo()
@@ -192,7 +193,7 @@ namespace DLHApi.DTO.V1.Mapper
         }
 
 
-        private async void AddRequestAudit(string mvid, string requestid)
+        private async Task AddRequestAudit(string mvid, string requestid)
         {
             try
             {
@@ -201,7 +202,8 @@ namespace DLHApi.DTO.V1.Mapper
                     Mvid = mvid,
                     RequestId = requestid
                 };
-                var auditResp = await _auditService.AddRequestAudit(audit);
+
+                await _auditService.AddRequestAudit(audit);
             }
             catch (Exception ex)
             {
@@ -210,11 +212,11 @@ namespace DLHApi.DTO.V1.Mapper
             }
         }
 
-        private async void UpdateRequestAudit(UpdateAuditRequest audit)
+        private async Task UpdateRequestAudit(UpdateAuditRequest audit)
         {
             try
             {              
-                var auditResp = await _auditService.UpdateRequestAudit(audit);
+                await _auditService.UpdateRequestAudit(audit);
             }
             catch (Exception ex)
             {

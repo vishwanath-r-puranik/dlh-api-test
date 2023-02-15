@@ -14,6 +14,8 @@
 
         public const string IncorrectMvID = "Input MvId:{0} is invalid.";
 
-        public const string IncorrectUsrnameOrPsswrd = "Username or Password is incorrect."; 
+        public const string IncorrectUsrnameOrPsswrd = "Username or Password is incorrect.";
+
+        public const string InvalidUrl = "Null or Invalid Url.";
     }
 }

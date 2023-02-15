@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using DLHApi.Common.Logger;
+using DLHApi.Common.Logger.Contracts;
 using DLHApi.DAL.Data;
 using DLHApi.DAL.EISHandler.Authentication;
 using DLHApi.DAL.Repo;
@@ -16,13 +18,17 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Org.OpenAPITools.Filters;
 using Org.OpenAPITools.OpenApi;
-using DLHApi.Common.Logger;
-using DLHApi.Common.Logger.Contracts;
 
 namespace DLHApi.OpenApiSpec
 {
+    /// <summary>
+    /// Registering various services and setup files here.
+    /// </summary>
     public static class ServiceExtensions
 	{
+        /// <summary>
+        /// Added services configure calls for varous layers
+        /// </summary>
         public static void RegisterServices(this IServiceCollection collection)
         {
             RegisterDALServices(collection);
@@ -30,6 +36,9 @@ namespace DLHApi.OpenApiSpec
             RegisterEISServices(collection);
         }
 
+        /// <summary>
+        /// For DAL layer services
+        /// </summary>
         public static void RegisterDALServices(this IServiceCollection collection)
         {
             collection.AddTransient<IDlhService, DlhService>();
@@ -38,11 +47,17 @@ namespace DLHApi.OpenApiSpec
             collection.AddTransient<IAuditRepo, AuditRepo>();   
         }
 
+        /// <summary>
+        /// For DTO layer services
+        /// </summary>
         public static void RegisterDTOServices(this IServiceCollection collection)
         {
             collection.AddTransient<DlhistoryModelMapper, DlhistoryModelMapper>();
         }
 
+        /// <summary>
+        /// Foor EIS layer services
+        /// </summary>
         public static void RegisterEISServices(this IServiceCollection collection)
         {
             collection.AddTransient<ITokenHandler, EIS.Authentication.TokenHandler>();
@@ -50,6 +65,9 @@ namespace DLHApi.OpenApiSpec
             collection.AddTransient<GenerateToken, GenerateToken>();
         }
 
+        /// <summary>
+        /// Databse setup services
+        /// </summary>
         public static void DbSetupServices(this IServiceCollection services)
         {
             var dlhDbServer = Environment.GetEnvironmentVariable("DlhDBServer");
@@ -62,15 +80,11 @@ namespace DLHApi.OpenApiSpec
 
             services.AddDbContext<DlhdevDbContext>(options => options.UseSqlServer($"Server={dlhDbServer};Database={dlhDbName};User Id={dlhDbUserId};Password={dlhDbPassword};TrustServerCertificate=True"));
 
-            //var auditDbServer = Environment.GetEnvironmentVariable("AuditDBServer");
-            //var auditDbName = Environment.GetEnvironmentVariable("AuditDBName");
-            //var auditDbUserId = Environment.GetEnvironmentVariable("AuditDbUserId");
-            //var auditDbPassword = Environment.GetEnvironmentVariable("AuditDbPassword");
-
-            //services.AddDbContext<DlhdevAuditContext>(options => options.UseSqlServer($"Server ={auditDbServer}; Database ={auditDbName}; User Id = {auditDbUserId}; Password ={auditDbPassword}; TrustServerCertificate = True"));
-
         }
 
+        /// <summary>
+        /// Swagger setup service
+        /// </summary>
         public static void EnableSwaggerServices(this IServiceCollection services)
         {
             services
@@ -130,6 +144,9 @@ namespace DLHApi.OpenApiSpec
                 .AddSwaggerGenNewtonsoftSupport();
         }
 
+        /// <summary>
+        /// Authentication setup
+        /// </summary>
         public static void ConfigureAuthenticationService(this IServiceCollection services)
         {
             var authenticationOptions = new KeycloakAuthenticationOptions
@@ -144,6 +161,9 @@ namespace DLHApi.OpenApiSpec
             services.AddKeycloakAuthentication(authenticationOptions);
         }
 
+        /// <summary>
+        /// Cors set up
+        /// </summary>
         public static void ConfigureCors(this IServiceCollection services)
         {
             services.AddCors(options =>
@@ -159,7 +179,9 @@ namespace DLHApi.OpenApiSpec
             });
         }
 
-        // :: Extention method for loggers.
+        /// <summary>
+        /// Extention method for loggers.
+        /// </summary>
         public static void ConfigureLoggerService(this IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();

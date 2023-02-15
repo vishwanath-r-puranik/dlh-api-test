@@ -1,12 +1,11 @@
-﻿using DLHApi.Common.Utils;
-using System.Net;
+﻿using System.Net;
+using DLHApi.Common.Constants;
+using DLHApi.Common.Logger.Contracts;
+using DLHApi.Common.Utils;
 using DLHApi.DAL.Data;
 using DLHApi.DAL.Models;
 using DLHApi.DAL.RequestResponse;
-using DLHApi.DAL.Utils;
 using Microsoft.EntityFrameworkCore;
-using DLHApi.Common.Constants;
-using DLHApi.Common.Logger.Contracts;
 
 namespace DLHApi.DAL.Repo
 {
@@ -55,15 +54,14 @@ namespace DLHApi.DAL.Repo
                                         {
                                             Mvid = c.Mvid,
                                             LicNumber = l.LicNumber,
-                                            //expected space instead of comma.
-                                            Name = string.Join(" ", string.IsNullOrEmpty(c.MiddleName)? new string[] {c.LastName,c.FirstName }:new string[] { c.LastName, c.FirstName+" "+ c.MiddleName }),
-                                            Dob = ToDateTime(c.Dob),
-                                            IssueDate = ToDateTime(ld.IssueDate),
-                                            ExpiryDate = ToDateTime(ld.ExpiryDate),
+                                            Name = string.Join(", ", string.IsNullOrEmpty(c.MiddleName)? new string[] {c.LastName,c.FirstName }:new string[] { c.LastName, c.FirstName+" "+ c.MiddleName }),
+                                            Dob = FormatExtension.ToDateTime(c.Dob),
+                                            IssueDate = FormatExtension.ToDateTime(ld.IssueDate),
+                                            ExpiryDate = FormatExtension.ToDateTime(ld.ExpiryDate),
                                             ServiceType = ld.ServiceType,
                                             LicClass = $"{lc.LicClass} - {lc.Description}",
                                             GDL = ld.Gdlstatus == "Y" ? "Yes" : "No",
-                                            GDLExitDate = ToDateTime(ld.GdlexitDate),
+                                            GDLExitDate = FormatExtension.ToDateTime(ld.GdlexitDate),
                                             Condition = string.IsNullOrEmpty(res.Condition1) ? string.Empty : $"{res.Condition1} - {res.Description}",
                                         }
                                      );
@@ -72,7 +70,7 @@ namespace DLHApi.DAL.Repo
                                            group r by new { r.Mvid, r.LicNumber, r.Name, r.Dob, r.IssueDate, r.ExpiryDate, r.ServiceType, r.LicClass, r.GDL, r.GDLExitDate } into clientLicenseCondition
                                            select new
                                            {
-                                               Mvid = clientLicenseCondition.FirstOrDefault().Mvid,
+                                               Mvid = clientLicenseCondition.FirstOrDefault()?.Mvid,
                                                LicNumber = clientLicenseCondition.FirstOrDefault()?.LicNumber,
                                                Name = clientLicenseCondition.FirstOrDefault()?.Name,
                                                Dob = clientLicenseCondition.FirstOrDefault()?.Dob,
@@ -93,7 +91,7 @@ namespace DLHApi.DAL.Repo
                                         orderby h.IssueDate descending
                                         select new DlhHistoryDisplay
                                         {
-                                            IssueDate = ToDateTime(h.IssueDate),
+                                            IssueDate = FormatExtension.ToDateTime(h.IssueDate),
                                             ServiceType = h.ServiceType,
                                             LicClass = $"{lc.LicClass} - {lc.Description}",
                                         }
@@ -102,21 +100,21 @@ namespace DLHApi.DAL.Repo
 
                     var dlhData = new DlhistoryModel
                     {
-                        MVID = clientLicenseResult.Mvid.ToMVIDFormat(),
-                        FullName = clientLicenseResult.Name,
-                        LicenseNumber = clientLicenseResult.LicNumber,
-                        Dob = clientLicenseResult.Dob,
-                        DateOfIssue = clientLicenseResult.IssueDate,
-                        DateOfExpire = clientLicenseResult.ExpiryDate,
-                        ServiceType = clientLicenseResult.ServiceType,
-                        LicenseClass = clientLicenseResult.LicClass,
-                        GDl = clientLicenseResult.GDL,
-                        GDlExitDate = clientLicenseResult.GDLExitDate,
-                        Conditions = clientLicenseResult.Conditions,
+                        MVID = clientLicenseResult?.Mvid?.ToMVIDFormat(),
+                        FullName = clientLicenseResult?.Name,
+                        LicenseNumber = clientLicenseResult?.LicNumber,
+                        Dob = clientLicenseResult?.Dob,
+                        DateOfIssue = clientLicenseResult?.IssueDate,
+                        DateOfExpire = clientLicenseResult?.ExpiryDate,
+                        ServiceType = clientLicenseResult?.ServiceType,
+                        LicenseClass = clientLicenseResult?.LicClass,
+                        GDl = clientLicenseResult?.GDL,
+                        GDlExitDate = clientLicenseResult?.GDLExitDate,
+                        Conditions = clientLicenseResult?.Conditions,
                         historyInfo = dlhistoryResult,
                     };
 
-                    if (dlhData != null)
+                    if (!string.IsNullOrEmpty(dlhData.MVID))
                     {
                         _logger.LogInfo($"{Project.DLHAPIDAL} - records found and fetching data");
                         response.DlhistoryModel = dlhData;
@@ -133,13 +131,5 @@ namespace DLHApi.DAL.Repo
             return response;
         }
 
-        //to avoid sonar cube null exceptions.
-        private static string? ToDateTime(DateTime? date)
-        {
-            if (date != null)
-                return ((DateTime)date).ToString("yyyy/MM/dd");
-
-            return "";
-        }
     }
 }

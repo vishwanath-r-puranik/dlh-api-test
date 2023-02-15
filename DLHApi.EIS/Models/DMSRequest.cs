@@ -1,8 +1,7 @@
-﻿using System;
-namespace DLHApi.EIS.Models
+﻿namespace DLHApi.EIS.Models
 {
-	public class DMSRequest
-	{
+	public class DmsRequest
+    {
         public string? Template { get; set; }
         public string? jsonDataSet { get; set; }
     }

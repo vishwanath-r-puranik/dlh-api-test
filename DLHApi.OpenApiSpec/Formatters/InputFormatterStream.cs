@@ -19,6 +19,9 @@ namespace Org.OpenAPITools.Formatters
             SupportedMediaTypes.Add("image/jpeg");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         protected override bool CanReadType(Type type)
         {
             if (type == typeof(Stream))
@@ -29,6 +32,9 @@ namespace Org.OpenAPITools.Formatters
             return false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
         {
             return InputFormatterResult.SuccessAsync(context.HttpContext.Request.Body);

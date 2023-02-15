@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <None Remove="Data\AuditDbscript.sql" />
+    <None Remove="Utils\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,4 +40,7 @@
     <!--<ProjectReference Include="..\DLHApi.EIS\DLHApi.EIS.csproj" />-->
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Utils\" />
+  </ItemGroup>
 </Project>

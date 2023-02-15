@@ -13,13 +13,13 @@ namespace DLHApi.UnitTest
 {
     public class DbServiceTest : IClassFixture<DlhDbFixture>
     {
-        public DlhDbFixture Fixture { get; }
+        public DlhDbFixture Fixture { get; set; }
 
         public IDlhRepo _dlhrepo { get; set; }
 
         private ILoggerManager _logger { get; }
 
-        public DbServiceTest(DlhDbFixture fixture, IDlhRepo dlhrepo)
+        public DbServiceTest(DlhDbFixture fixture)
         {
             Fixture = fixture;
             var dlhcontext = Fixture.CreateDlhContext();

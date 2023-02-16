@@ -11,7 +11,7 @@ namespace Org.OpenAPITools.Formatters
     public class InputFormatterStream : InputFormatter
     {
         /// <summary>
-        /// 
+        /// Input request media types added
         /// </summary>
         public InputFormatterStream()
         {
@@ -20,7 +20,7 @@ namespace Org.OpenAPITools.Formatters
         }
 
         /// <summary>
-        /// 
+        /// Input request to handleif readable type property
         /// </summary>
         protected override bool CanReadType(Type type)
         {
@@ -33,7 +33,7 @@ namespace Org.OpenAPITools.Formatters
         }
 
         /// <summary>
-        /// 
+        /// Input request to handle if readable request body property
         /// </summary>
         public override Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
         {

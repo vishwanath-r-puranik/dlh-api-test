@@ -40,7 +40,7 @@ namespace Org.OpenAPITools.Attributes
             }
         }
 
-        private void ValidateAttributes(ParameterInfo parameter, object args, ModelStateDictionary modelState)
+        private static void ValidateAttributes(ParameterInfo parameter, object args, ModelStateDictionary modelState)
         {
             foreach (var attributeData in parameter.CustomAttributes)
             {

@@ -32,8 +32,7 @@ namespace Org.OpenAPITools.Filters
         /// <param name="context">FilterContext</param>
         public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
         {
-            //swaggerDoc.BasePath = BasePath;
-
+            
             var pathsToModify = swaggerDoc.Paths.Where(p => p.Key.StartsWith(BasePath)).ToList();
 
             foreach (var (key, value) in pathsToModify)

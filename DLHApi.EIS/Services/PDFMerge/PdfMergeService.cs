@@ -158,7 +158,7 @@ namespace DLHApi.EIS.Services.PDFMerge
 
         private static byte[]? Base64DocDecode(string? encodedString)
         {
-            if (encodedString == null) return null ;
+            if (encodedString == null) return Array.Empty<byte>() ;
 
             byte[] content = Convert.FromBase64String(encodedString);
 
@@ -172,10 +172,6 @@ namespace DLHApi.EIS.Services.PDFMerge
             dlhDocMergeDetails.Mvid = apiRequest?.MVID;
             dlhDocMergeDetails.LicenseNumber = apiRequest?.LicenseNumber;
             dlhDocMergeDetails.LastName = apiRequest?.FullName;
-            //might use these later
-            //dlhDocMergeDetails.LastName = apiRequest?.LastName;
-            //dlhDocMergeDetails.FirstName = apiRequest?.FirstName;
-            //dlhDocMergeDetails.MiddleName = apiRequest?.MiddleName;
             dlhDocMergeDetails.Dob = apiRequest?.Dob;
             dlhDocMergeDetails.IssueDate = apiRequest?.DateOfIssue;
             dlhDocMergeDetails.ExpiryDate = apiRequest?.DateOfExpire;
@@ -201,7 +197,7 @@ namespace DLHApi.EIS.Services.PDFMerge
         {
             IList<DlhDocMergeHistoryDetails> dlhDocMergeDetailsString = new List<DlhDocMergeHistoryDetails>();
 
-            if (docMergeDataHistoryInfos == null || docMergeDataHistoryInfos.Count <= 0) return null;
+            if (docMergeDataHistoryInfos == null || docMergeDataHistoryInfos.Count <= 0) return dlhDocMergeDetailsString;
 
             foreach (var item in docMergeDataHistoryInfos)
             {

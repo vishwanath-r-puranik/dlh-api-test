@@ -21,5 +21,19 @@
 
             return "";
         }
+
+        //to avoid sonar cube null exceptions.
+        public static string? ToNameFormat(string? firstName, string? middleName, string? lastName)
+        {
+            string FullName = "";
+            if (!string.IsNullOrEmpty(lastName))
+                FullName = FullName + lastName;
+            if (!string.IsNullOrEmpty(firstName))
+                FullName = (!string.IsNullOrEmpty(FullName)) ? FullName + ", "  + firstName : firstName;
+            if (!string.IsNullOrEmpty(middleName))
+                FullName = (!string.IsNullOrEmpty(FullName)) ? FullName + " " + middleName : middleName;
+            
+            return FullName;
+        }
     }
 }

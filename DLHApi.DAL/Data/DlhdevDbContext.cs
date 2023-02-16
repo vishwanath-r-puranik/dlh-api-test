@@ -235,8 +235,8 @@ public partial class DlhdevDbContext : DbContext
                 .HasConstraintName("FK_LicDetails_LICENCE_MVID");
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        //OnModelCreatingPartial(modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    //partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

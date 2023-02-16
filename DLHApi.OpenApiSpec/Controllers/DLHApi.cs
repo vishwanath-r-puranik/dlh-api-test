@@ -24,7 +24,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace Org.OpenAPITools.Controllers
 {
     /// <summary>
-    /// 
+    /// Main dlh api controller class
     /// </summary>
     [ApiController]
     public class DLHApiController : ControllerBase
@@ -33,7 +33,7 @@ namespace Org.OpenAPITools.Controllers
         private readonly ILoggerManager _logger;
 
         /// <summary>
-        /// 
+        /// Main controller constructor 
         /// </summary>
         public DLHApiController(DlhistoryModelMapper dlhistoryModelMapper, ILoggerManager logger)
         {

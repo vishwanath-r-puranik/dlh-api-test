@@ -59,7 +59,7 @@ namespace DLHApi.DTO.V1.Mapper
         public async Task<IActionResult> DLHDocumentMerge(int mvid)
         {
             // Create audit record, unique request id should come from the queue, temporarily appending audit for now
-            var requestId = "audit-" + mvid.ToString();
+            var requestId = Guid.NewGuid().ToString(); // "audit-" + mvid.ToString();
              await AddRequestAudit(mvid.ToString(), requestId);
 
             DlhRequest req = new DlhRequest { Mvid = mvid };
@@ -125,7 +125,7 @@ namespace DLHApi.DTO.V1.Mapper
 
         #region Private Functions
 
-        private DocMergeApiRequest MapDLhistoryToDocMergeApiRequest(DTO.DlhistoryModel? dlhistoryModel, int mvid)
+        private static DocMergeApiRequest MapDLhistoryToDocMergeApiRequest(DTO.DlhistoryModel? dlhistoryModel, int mvid)
         {
             if (dlhistoryModel == null)
                 return new DocMergeApiRequest()

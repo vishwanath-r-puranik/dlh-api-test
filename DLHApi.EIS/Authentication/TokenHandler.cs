@@ -5,7 +5,6 @@ namespace DLHApi.EIS.Authentication
 {
     public class TokenHandler : ITokenHandler
     {
-        //private readonly IConfiguration? _configuration;
         static readonly HttpClient client = new HttpClient();
 
         public async Task<string?> RetrieveToken()

@@ -9,24 +9,24 @@ using Microsoft.AspNetCore.Mvc;
 namespace DLHApi.OpenApiSpec.Controllers
 {
     /// <summary>
-    /// 
+    /// Autthentication controller class
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         /// <summary>
-        /// 
+        /// Auth token property declaration
         /// </summary>
         private readonly GenerateToken _generateToken;
 
         /// <summary>
-        /// 
+        /// Logger property declaration
         /// </summary>
         private readonly ILoggerManager _logger;
 
         /// <summary>
-        /// 
+        /// Authentication controller class contructor.
         /// </summary>
         public AuthController(GenerateToken generateToken, ILoggerManager logger)
         {
@@ -35,7 +35,7 @@ namespace DLHApi.OpenApiSpec.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Auth login endpoint
         /// </summary>
         [HttpPost]
         [Route("login")]
@@ -51,16 +51,8 @@ namespace DLHApi.OpenApiSpec.Controllers
             }
 
             _logger.LogError($"{Project.DLHAPIOpenSpec} - Authentication request failed. {(int)HttpStatusCode.BadRequest}");
-            throw new ApiException((string.Format(ErrorConstants.IncorrectUsrnameOrPsswrd)), (int)HttpStatusCode.BadRequest);
+            throw new ApiException((ErrorConstants.IncorrectUsrnameOrPsswrd), (int)HttpStatusCode.BadRequest);
             
-            /*var acessToken = await _tokenHandler.RetrieveToken();
-
-            if (acessToken != null)
-            {
-                return Ok(acessToken);
-            }
-
-            return BadRequest("Username of Password is incorrect"); */
         }
     }
 }

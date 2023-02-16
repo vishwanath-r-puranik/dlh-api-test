@@ -15,7 +15,7 @@ using System.Text;
 namespace Org.OpenAPITools.Models
 {
     /// <summary>
-    /// 
+    /// Dlh api response model
     /// </summary>
     [DataContract]
     public partial class DLHApiPDFData : IEquatable<DLHApiPDFData>

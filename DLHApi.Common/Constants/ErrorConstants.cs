@@ -8,6 +8,8 @@
 
         public const string UnhandledEx = "Unable to process the request. Unhandled Exception occurred.";
 
+        public const string UnDefinedEx = "Unable to process the request. Undefined Exception has occured.";
+
         public const string ObjNotSet = "Object: {0} not set.";
 
         public const string NoData = "Request returned No Data.";

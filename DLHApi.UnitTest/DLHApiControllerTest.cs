@@ -7,8 +7,6 @@ using DLHApi.EIS.Services.PDFMerge;
 using DLHApi.EIS.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using Moq;
 using Org.OpenAPITools.Controllers;
 using DLHApi.Common.Logger.Contracts;
@@ -33,8 +31,7 @@ namespace DLHApi.UnitTest
         public DLHApiControllerTest(DlhDbFixture  fixture)
         {
             Fixture = fixture;
-            //_tokenHandler = tokenHandler;
-            //_dLHApiController = dLHApiController;
+         
 
             _logger = Mock.Of<ILoggerManager>();
 
@@ -88,6 +85,28 @@ namespace DLHApi.UnitTest
             var val = (FileContentResult)res;
             Assert.NotNull(val.FileContents);
             Assert.Equal("application/pdf", val.ContentType);
+        }
+
+        [Fact]
+        public async void Get_ReturnsData()
+        {
+
+            var res = await _dLHApiController.DLHDocumentMvidGet(123456789);
+
+            Assert.IsType<OkObjectResult>(res);
+
+            var val = (OkObjectResult)res;
+            Assert.NotNull(val.Value);
+        }
+
+        [Fact]
+        public async void Get_ReturnsNot_Found()
+        {
+
+            var res = await _dLHApiController.DLHDocumentMvidGet(123456);
+
+            Assert.IsType<NotFoundResult>(res);
+
         }
     }
 }

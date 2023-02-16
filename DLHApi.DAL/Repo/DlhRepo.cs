@@ -54,7 +54,7 @@ namespace DLHApi.DAL.Repo
                                         {
                                             Mvid = c.Mvid,
                                             LicNumber = l.LicNumber,
-                                            Name = string.Join(", ", string.IsNullOrEmpty(c.MiddleName)? new string[] {c.LastName,c.FirstName }:new string[] { c.LastName, c.FirstName+" "+ c.MiddleName }),
+                                            Name = FormatExtension.ToNameFormat(c.FirstName,c.MiddleName,c.LastName),
                                             Dob = FormatExtension.ToDateTime(c.Dob),
                                             IssueDate = FormatExtension.ToDateTime(ld.IssueDate),
                                             ExpiryDate = FormatExtension.ToDateTime(ld.ExpiryDate),

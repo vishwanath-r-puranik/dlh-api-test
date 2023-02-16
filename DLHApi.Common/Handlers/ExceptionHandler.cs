@@ -57,13 +57,23 @@ namespace DLHApi.Common.Handlers
 
         }
 
-        private static async Task HandleDlhApiErrorAsync(HttpContext context, ApiException ex)
+        private static async Task HandleDlhApiErrorAsync(HttpContext context, ApiException? ex)
         {
-            var response = new DlhApiFailureResponse(new DlhErrorModel { Message = ex.Message, Status = ex.StatusCode });
+            DlhErrorModel dlhErrorModel = new DlhErrorModel();
+            if (ex != null)
+            {
+                dlhErrorModel.Message = ex.Message;
+                dlhErrorModel.Status = ex.StatusCode;
+            }
+            else {
+                dlhErrorModel.Message = ErrorConstants.UnDefinedEx;
+                dlhErrorModel.Status = (int)HttpStatusCode.Forbidden;
+            }
+            var response = new DlhApiFailureResponse(dlhErrorModel);
 
             var jsonString = JsonSerializer.Serialize(response);
 
-            await WriteFormattedRespToHttpContextAsync(context, ex.StatusCode, jsonString!);
+            await WriteFormattedRespToHttpContextAsync(context, dlhErrorModel.Status, jsonString!);
         }
 
         private static async Task HandleDlhValidationErrorAsync(HttpContext context, ApiException ex)

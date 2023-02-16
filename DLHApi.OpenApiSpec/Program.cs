@@ -8,7 +8,7 @@ namespace Org.OpenAPITools
     /// <summary>
     /// Program
     /// </summary>
-    public class Program
+    public static class Program
     {
         /// <summary>
         /// Main
@@ -30,12 +30,7 @@ namespace Org.OpenAPITools
                 {
                     webBuilder.UseStartup<Startup>();
                 })
-                .ConfigureAppConfiguration(config => { config.AddEnvironmentVariables(); })
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    //we should avoid logging to cconsole directly, search for better place to log...
-                    logging.AddConsole();
-                });
+                .ConfigureAppConfiguration(config => { config.AddEnvironmentVariables(); });
+               
     }
 }

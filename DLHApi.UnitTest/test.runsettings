@@ -8,16 +8,11 @@
       <DlhDBName>DLHDevDb</DlhDBName>
       <DlhDbUserId>sa</DlhDbUserId>
       <DlhDbPassword>Sql2019isfast</DlhDbPassword>
-      <!--<AuditDBServer>169.55.186.119, 9443</AuditDBServer>
-      <AuditDBName>DLHDevAudit</AuditDBName>
-      <AuditDbUserId>sa</AuditDbUserId>
-      <AuditDbPassword>Sql2019isfast</AuditDbPassword>-->
       <DMSUri>https://apiuat.gov.ab.ca/uat/dms/merge/render-template-with-regions</DMSUri>
       <DMS_AccesToken_Uri>https://idpdev.gov.ab.ca/auth/realms/ServiceIntegration/protocol/openid-connect/token</DMS_AccesToken_Uri>
       <DMS_ClientID>dlh-app-uat</DMS_ClientID>
       <DMS_ClientSecret>9fd027ec-aa4e-4894-922e-71ae450e5e9a</DMS_ClientSecret>
       <DMS_GrantType>client_credentials</DMS_GrantType>
-      <!--<DocMergrUri>https://mock21-mock-doc-merge.apps.pesdev.hcscloud.net/mergepdfservice</DocMergrUri>-->
     </EnvironmentVariables>
   </RunConfiguration>
 </RunSettings>

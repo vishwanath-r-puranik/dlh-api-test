@@ -87,6 +87,7 @@ namespace DLHApi.OpenApiSpec
         /// </summary>
         public static void EnableSwaggerServices(this IServiceCollection services)
         {
+            var ibmUri = "https://www.ibm.com/ca-en";
             services
                 .AddSwaggerGen(c =>
                 {
@@ -96,17 +97,17 @@ namespace DLHApi.OpenApiSpec
                     {
                         Title = "IBM MOVES DLH API",
                         Description = "IBM MOVES DLH API (ASP.NET Core 6.0)",
-                        TermsOfService = new Uri("https://www.ibm.com/ca-en"),
+                        TermsOfService = new Uri(ibmUri),
                         Contact = new OpenApiContact
                         {
                             Name = "IBM API Support Team",
-                            Url = new Uri("https://www.ibm.com/ca-en"),
+                            Url = new Uri(ibmUri),
                             Email = "support@ibm.com"
                         },
                         License = new OpenApiLicense
                         {
                             Name = "NoLicense",
-                            Url = new Uri("https://www.ibm.com/ca-en")
+                            Url = new Uri(ibmUri)
                         },
                         Version = "0.0.1",
                     });
@@ -136,7 +137,7 @@ namespace DLHApi.OpenApiSpec
                     c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
                     c.AddSecurityRequirement(new OpenApiSecurityRequirement
                     {
-                        {securityScheme, new string[] {} }
+                        {securityScheme, Array.Empty<string>() }
                     });
 
                 });
